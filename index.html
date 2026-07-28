@@ -251,6 +251,31 @@
     opacity:.55;
   }
 
+  .announcement{
+    width:100%;
+    margin:0 0 18px;
+    padding:14px 14px 12px;
+    border:2px solid rgba(240,171,252,0.35);
+    background:rgba(28,15,54,0.55);
+    box-shadow:0 0 0 1px var(--black), 0 5px 0 0 var(--black);
+    text-align:center;
+  }
+
+  .announcement .title{
+    font-family:'Press Start 2P', monospace;
+    font-size:12px;
+    color:var(--pink);
+    margin-bottom:10px;
+    line-height:1.4;
+  }
+
+  .announcement .text{
+    font-size:20px;
+    color:var(--text);
+    line-height:1.25;
+    letter-spacing:.5px;
+  }
+
   .links{
     display:flex;
     flex-direction:column;
@@ -366,6 +391,11 @@
   <p class="tag">Kick Yayıncısı</p>
 
   <div class="divider"></div>
+
+  <section class="announcement" aria-label="Duyuru">
+    <div class="title">DUYURU</div>
+    <div class="text">Buraya duyuru metnini ekleyebiliriz.</div>
+  </section>
 
   <nav class="links">
     <a class="btn btn-kick" href="https://kick.com/katiya" target="_blank" rel="noopener">
