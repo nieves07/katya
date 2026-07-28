@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
 <style>
   :root{
     --bg-1:#130a25;
@@ -21,19 +22,22 @@
   }
 
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
+
+  html,body{
+    margin:0;
+    padding:0;
+  }
 
   body{
     min-height:100vh;
     overflow-x:hidden;
     color:var(--text);
-    font-family:'VT323', monospace;
+    font-family:'VT323',monospace;
+    cursor:none;
     background:
-      radial-gradient(circle at 50% 16%, rgba(168,85,247,0.12), transparent 16%),
-      radial-gradient(circle at 18% 28%, rgba(240,171,252,0.05), transparent 10%),
-      radial-gradient(circle at 82% 70%, rgba(83,252,24,0.03), transparent 8%),
-      linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 48%, var(--bg-3) 100%);
-    position:relative;
+      radial-gradient(circle at 50% 16%,rgba(168,85,247,.12),transparent 16%),
+      radial-gradient(circle at 18% 28%,rgba(240,171,252,.05),transparent 10%),
+      linear-gradient(180deg,var(--bg-1),var(--bg-2) 48%,var(--bg-3));
   }
 
   body::before{
@@ -41,29 +45,52 @@
     position:fixed;
     inset:0;
     pointer-events:none;
-    background:
-      radial-gradient(circle at 20% 20%, rgba(168,85,247,0.06), transparent 6%),
-      radial-gradient(circle at 80% 30%, rgba(240,171,252,0.04), transparent 9%),
-      radial-gradient(circle at 50% 80%, rgba(168,85,247,0.05), transparent 12%);
-    opacity:.65;
     z-index:0;
-  }
-
-  body::after{
-    content:"";
-    position:fixed;
-    inset:0;
-    pointer-events:none;
+    opacity:.65;
     background:
-      linear-gradient(120deg, rgba(255,255,255,0.015), transparent 40%, rgba(255,255,255,0.008), transparent 70%),
-      radial-gradient(circle at 50% 50%, rgba(168,85,247,0.05), transparent 42%);
-    z-index:1;
+      radial-gradient(circle at 20% 20%,rgba(168,85,247,.06),transparent 6%),
+      radial-gradient(circle at 80% 30%,rgba(240,171,252,.04),transparent 9%),
+      radial-gradient(circle at 50% 80%,rgba(168,85,247,.05),transparent 12%);
   }
 
-  #sparkles, #rain{
+  #cursor,
+  #cursor-dot{
+    position:fixed;
+    pointer-events:none;
+    z-index:20;
+    transform:translate(-50%,-50%);
+  }
+
+  #cursor{
+    width:22px;
+    height:22px;
+    border:2px solid var(--pink);
+    box-shadow:
+      4px 0 0 var(--black),
+      -4px 0 0 var(--black),
+      0 4px 0 var(--black),
+      0 -4px 0 var(--black),
+      0 0 10px rgba(240,171,252,.7);
+    transition:width .15s,height .15s,border-color .15s;
+  }
+
+  #cursor-dot{
+    width:5px;
+    height:5px;
+    background:var(--green);
+    box-shadow:0 0 8px var(--green);
+  }
+
+  body.cursor-hover #cursor{
+    width:30px;
+    height:30px;
+    border-color:var(--green);
+  }
+
+  #sparkles,#rain,#mist{
     position:fixed;
     inset:0;
-    z-index:2;
+    z-index:1;
     pointer-events:none;
     overflow:hidden;
   }
@@ -73,23 +100,15 @@
     width:4px;
     height:4px;
     border-radius:50%;
-    background:rgba(216,180,254,0.95);
-    box-shadow:0 0 10px rgba(168,85,247,0.55);
-    opacity:.6;
+    background:var(--pink);
+    box-shadow:0 0 10px var(--purple);
     animation:drift linear infinite;
   }
 
-  .sparkle.big{
-    width:6px;
-    height:6px;
-    background:rgba(240,171,252,0.95);
-    box-shadow:0 0 14px rgba(240,171,252,0.6);
-  }
-
   @keyframes drift{
-    0%{transform:translateY(-18vh) translateX(0) scale(.85); opacity:0;}
-    12%{opacity:.75;}
-    100%{transform:translateY(118vh) translateX(30px) scale(1.08); opacity:0;}
+    0%{transform:translateY(-18vh);opacity:0;}
+    12%{opacity:.7;}
+    100%{transform:translateY(118vh) translateX(30px);opacity:0;}
   }
 
   .drop{
@@ -98,21 +117,48 @@
     width:2px;
     height:34px;
     border-radius:999px;
-    background:linear-gradient(to bottom, rgba(255,255,255,0), rgba(216,180,254,0.85), rgba(255,255,255,0));
-    filter:blur(.2px);
+    background:linear-gradient(
+      to bottom,
+      transparent,
+      rgba(216,180,254,.85),
+      transparent
+    );
     opacity:.22;
     animation:rainFall linear infinite;
   }
 
   @keyframes rainFall{
-    0%{transform:translateY(-25vh); opacity:0;}
+    0%{transform:translateY(-25vh);opacity:0;}
     8%{opacity:.22;}
-    100%{transform:translateY(140vh); opacity:0;}
+    100%{transform:translateY(140vh);opacity:0;}
+  }
+
+  .mist{
+    position:absolute;
+    border-radius:50%;
+    background:radial-gradient(
+      circle,
+      rgba(168,85,247,.18),
+      rgba(168,85,247,.06) 40%,
+      transparent 72%
+    );
+    filter:blur(12px);
+    opacity:.2;
+    animation:mistFloat ease-in-out infinite alternate;
+  }
+
+  .mist.one{width:220px;height:220px;left:-50px;top:18%;}
+  .mist.two{width:280px;height:280px;right:-90px;top:48%;}
+
+  @keyframes mistFloat{
+    from{transform:translate(0,0) scale(1);}
+    to{transform:translate(18px,-12px) scale(1.08);}
   }
 
   main{
     position:relative;
     z-index:3;
+    width:100%;
     max-width:460px;
     margin:0 auto;
     padding:56px 20px 70px;
@@ -121,89 +167,84 @@
     align-items:center;
   }
 
+  .hero-wrap{
+    perspective:900px;
+    margin-bottom:18px;
+  }
+
   .hero{
     position:relative;
     width:360px;
     height:440px;
-    margin-bottom:8px;
-    display:flex;
-    align-items:flex-end;
-    justify-content:center;
     overflow:hidden;
-    border-radius:24px;
-    box-shadow:0 0 0 1px rgba(216,180,254,0.12), 0 0 18px rgba(168,85,247,0.10);
-    background:rgba(255,255,255,0.01);
+    border-radius:8px;
+    background:rgba(255,255,255,.02);
+    transform-style:preserve-3d;
+    transition:transform .15s ease-out;
+    box-shadow:
+      0 0 0 4px var(--black),
+      0 0 0 7px var(--purple),
+      0 0 0 10px var(--black),
+      0 0 22px rgba(168,85,247,.35);
   }
 
+  /* Pixel art köşe süsleri */
   .hero::before,
   .hero::after{
     content:"";
     position:absolute;
-    left:50%;
-    top:42%;
-    border-radius:50%;
-    transform:translate(-50%,-50%);
+    z-index:4;
+    width:28px;
+    height:28px;
     pointer-events:none;
+    background:
+      linear-gradient(var(--pink),var(--pink)) 0 0/10px 10px no-repeat,
+      linear-gradient(var(--pink),var(--pink)) 100% 100%/10px 10px no-repeat;
   }
 
   .hero::before{
-    width:180px;
-    height:180px;
-    background:radial-gradient(circle, rgba(216,180,254,0.10) 0%, rgba(168,85,247,0.05) 34%, transparent 72%);
-    animation:haloPulse 5s ease-in-out infinite;
+    top:8px;
+    left:8px;
   }
 
   .hero::after{
-    width:240px;
-    height:240px;
-    background:radial-gradient(circle, rgba(240,171,252,0.04) 0%, rgba(168,85,247,0.02) 42%, transparent 78%);
-    animation:haloPulse2 7s ease-in-out infinite alternate;
-  }
-
-  @keyframes haloPulse{
-    0%,100%{opacity:.45; transform:translate(-50%,-50%) scale(1);}
-    50%{opacity:.75; transform:translate(-50%,-50%) scale(1.03);}
-  }
-  @keyframes haloPulse2{
-    0%{opacity:.16; transform:translate(-50%,-50%) scale(.99);}
-    100%{opacity:.28; transform:translate(-50%,-50%) scale(1.02);}
+    right:8px;
+    bottom:8px;
+    transform:rotate(180deg);
   }
 
   .hero img{
-    position:relative;
-    z-index:2;
     width:100%;
     height:100%;
     object-fit:cover;
     object-position:41% center;
     transform:scale(1.18);
-    filter:drop-shadow(0 8px 12px rgba(0,0,0,0.32));
+    filter:drop-shadow(0 8px 12px rgba(0,0,0,.35));
   }
 
   .live-dot{
     position:absolute;
-    z-index:3;
-    top:14px;
-    right:8px;
+    z-index:5;
+    top:15px;
+    right:10px;
     display:flex;
     align-items:center;
     gap:6px;
-    background:rgba(5,2,8,0.72);
-    border:2px solid var(--green);
     padding:4px 8px;
+    color:var(--green);
     font-size:14px;
     letter-spacing:1px;
-    color:var(--green);
-    text-transform:uppercase;
-    box-shadow:0 0 10px rgba(83,252,24,0.12);
+    background:rgba(5,2,8,.78);
+    border:2px solid var(--green);
+    box-shadow:0 0 10px rgba(83,252,24,.15);
   }
 
   .live-dot .dot{
     width:8px;
     height:8px;
     background:var(--green);
+    box-shadow:0 0 6px var(--green);
     animation:blink 1s steps(1) infinite;
-    box-shadow:0 0 6px rgba(83,252,24,0.6);
   }
 
   @keyframes blink{
@@ -212,32 +253,25 @@
   }
 
   h1.name{
-    font-family:'Press Start 2P', monospace;
+    margin:8px 0;
+    font-family:'Press Start 2P',monospace;
     font-size:24px;
     line-height:1.5;
-    margin:14px 0 8px;
     letter-spacing:1px;
     text-align:center;
-    text-shadow:3px 3px 0 var(--black), 0 0 12px rgba(168,85,247,0.28);
-    animation:titleGlow 3.5s ease-in-out infinite alternate;
+    text-shadow:3px 3px 0 var(--black),0 0 12px rgba(168,85,247,.35);
   }
 
-  @keyframes titleGlow{
-    0%{text-shadow:3px 3px 0 var(--black), 0 0 8px rgba(168,85,247,0.22);}
-    100%{text-shadow:3px 3px 0 var(--black), 0 0 14px rgba(216,180,254,0.45);}
-  }
-
-  .cursor{
-    display:inline-block;
+  .cursor-blink{
     color:var(--green);
     animation:blink 1s steps(1) infinite;
   }
 
   .tag{
+    margin:0 0 22px;
+    color:var(--text-dim);
     font-size:19px;
     letter-spacing:2px;
-    color:var(--text-dim);
-    margin:0 0 22px;
     text-transform:uppercase;
     text-align:center;
   }
@@ -245,42 +279,60 @@
   .divider{
     width:100%;
     height:6px;
-    margin:0 0 24px;
-    background-image:linear-gradient(90deg, var(--purple) 0 8px, transparent 8px 14px);
-    background-size:14px 6px;
+    margin-bottom:22px;
     opacity:.55;
+    background-image:linear-gradient(
+      90deg,
+      var(--purple) 0 8px,
+      transparent 8px 14px
+    );
+    background-size:14px 6px;
   }
 
   .announcement{
     width:100%;
-    margin:0 0 18px;
-    padding:14px 14px 12px;
-    border:2px solid rgba(240,171,252,0.35);
-    background:rgba(28,15,54,0.55);
-    box-shadow:0 0 0 1px var(--black), 0 5px 0 0 var(--black);
+    margin-bottom:20px;
+    padding:15px;
+    border:2px solid rgba(240,171,252,.4);
+    background:rgba(28,15,54,.62);
+    box-shadow:0 0 0 1px var(--black),0 5px 0 var(--black);
+  }
+
+  .announcement-title{
+    margin-bottom:12px;
+    color:var(--pink);
+    font-family:'Press Start 2P',monospace;
+    font-size:12px;
+    line-height:1.5;
     text-align:center;
   }
 
-  .announcement .title{
-    font-family:'Press Start 2P', monospace;
-    font-size:12px;
-    color:var(--pink);
-    margin-bottom:10px;
-    line-height:1.4;
+  .notice{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    padding:9px 4px;
+    border-top:1px dashed rgba(216,180,254,.28);
+    color:var(--text);
+    font-size:19px;
+    line-height:1.15;
   }
 
-  .announcement .text{
-    font-size:20px;
-    color:var(--text);
-    line-height:1.25;
-    letter-spacing:.5px;
+  .notice:first-of-type{
+    border-top:0;
+  }
+
+  .notice-date{
+    flex:0 0 auto;
+    color:var(--green);
+    font-size:16px;
   }
 
   .links{
+    width:100%;
     display:flex;
     flex-direction:column;
     gap:14px;
-    width:100%;
   }
 
   .btn{
@@ -289,36 +341,25 @@
     align-items:center;
     justify-content:center;
     gap:10px;
-    font-family:'VT323', monospace;
+    padding:14px 16px;
+    color:var(--text);
+    font-family:'VT323',monospace;
     font-size:22px;
     letter-spacing:1px;
     text-decoration:none;
-    color:var(--text);
-    background:rgba(28,15,54,0.52);
-    border:2px solid rgba(168,85,247,0.35);
-    box-shadow:0 0 0 1px var(--black), 0 5px 0 0 var(--black), 0 0 0 rgba(0,0,0,0);
-    padding:14px 16px;
     text-transform:uppercase;
-    transition:transform .14s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease, filter .2s ease;
-    overflow:hidden;
-    will-change:transform;
+    background:rgba(28,15,54,.55);
+    border:2px solid rgba(168,85,247,.4);
+    box-shadow:0 0 0 1px var(--black),0 5px 0 var(--black);
+    transition:.2s ease;
   }
 
-  .btn::before{
-    content:"";
-    position:absolute;
-    inset:-25% -20%;
-    background:linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
-    transform:translateX(-130%);
-    transition:transform .7s ease;
-  }
-
-  .btn:hover::before{transform:translateX(130%);}
   .btn:hover{
-    background:rgba(58,29,99,0.62);
-    border-color:rgba(216,180,254,0.7);
-    box-shadow:0 0 0 1px var(--black), 0 5px 0 0 var(--black), 0 0 12px rgba(168,85,247,0.18);
-    filter:saturate(1.05);
+    color:#fff;
+    background:rgba(58,29,99,.72);
+    border-color:var(--pink);
+    transform:translateY(-2px);
+    box-shadow:0 0 0 1px var(--black),0 5px 0 var(--black),0 0 14px rgba(168,85,247,.25);
   }
 
   .btn:active{
@@ -327,12 +368,8 @@
   }
 
   .btn-kick{
-    border-color:rgba(83,252,24,0.8);
     color:#eaffe0;
-  }
-
-  .btn-kick:hover{
-    box-shadow:0 0 0 1px var(--black), 0 5px 0 0 var(--black), 0 0 12px rgba(83,252,24,0.16);
+    border-color:rgba(83,252,24,.8);
   }
 
   .icon{
@@ -342,13 +379,9 @@
 
   .footer{
     margin-top:30px;
+    color:var(--text-dim);
     font-size:15px;
     letter-spacing:1px;
-    color:var(--text-dim);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:6px;
   }
 
   .heart{
@@ -357,89 +390,185 @@
   }
 
   @keyframes beat{
-    0%,100%{transform:scale(1);}
     50%{transform:scale(1.15);}
   }
 
-  @media (max-width:420px){
-    h1.name{font-size:19px;}
-    .hero{width:300px; height:360px;}
+  @media(max-width:600px){
+    body{cursor:auto;}
+
+    #cursor,#cursor-dot{
+      display:none;
+    }
   }
 
-  @media (prefers-reduced-motion: reduce){
-    *{animation:none !important; transition:none !important;}
+  @media(max-width:420px){
+    main{padding-top:40px;}
+    .hero{
+      width:300px;
+      height:360px;
+    }
+
+    h1.name{
+      font-size:19px;
+    }
   }
 
-  a.btn:focus-visible{
-    outline:3px solid var(--purple);
-    outline-offset:3px;
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{
+      animation:none!important;
+      transition:none!important;
+    }
   }
 </style>
 </head>
+
 <body>
+  <div id="cursor"></div>
+  <div id="cursor-dot"></div>
 
-<div id="sparkles" aria-hidden="true"></div>
-<div id="rain" aria-hidden="true"></div>
+  <div id="sparkles" aria-hidden="true"></div>
+  <div id="rain" aria-hidden="true"></div>
+  <div id="mist" aria-hidden="true"></div>
 
-<main>
-  <div class="hero">
-    <span class="live-dot"><span class="dot"></span>CANLI</span>
-    <img src="https://i.ibb.co/LdpTzTrf/Ads-z-tasar-m-1.png" alt="Katiya portresi, taç ve kolye takıyor">
-  </div>
+  <main>
+    <div class="hero-wrap">
+      <div class="hero" id="profileCard">
+        <span class="live-dot">
+          <span class="dot"></span>
+          CANLI
+        </span>
 
-  <h1 class="name">KATIYA<span class="cursor">_</span></h1>
-  <p class="tag">Kick Yayıncısı</p>
+        <img
+          src="https://i.ibb.co/LdpTzTrf/Ads-z-tasar-m-1.png"
+          alt="Katiya portresi, taç ve kolye takıyor"
+        >
+      </div>
+    </div>
 
-  <div class="divider"></div>
+    <h1 class="name">
+      KATIYA<span class="cursor-blink">_</span>
+    </h1>
 
-  <section class="announcement" aria-label="Duyuru">
-    <div class="title">DUYURU</div>
-    <div class="text">Buraya duyuru metnini ekleyebiliriz.</div>
-  </section>
+    <p class="tag">Kick Yayıncısı</p>
 
-  <nav class="links">
-    <a class="btn btn-kick" href="https://kick.com/katiya" target="_blank" rel="noopener">
-      <span class="icon">🎮</span> Kick'te İzle
-    </a>
-    <a class="btn" href="https://instagram.com/katiya" target="_blank" rel="noopener">
-      <span class="icon">📸</span> Instagram
-    </a>
-    <a class="btn" href="https://tiktok.com/@katiya" target="_blank" rel="noopener">
-      <span class="icon">🎵</span> TikTok
-    </a>
-    <a class="btn" href="#" target="_blank" rel="noopener">
-      <span class="icon">💬</span> Discord'a Katıl
-    </a>
-  </nav>
+    <div class="divider"></div>
 
-  <p class="footer">yayın zamanı <span class="heart">♥</span> katiya</p>
-</main>
+    <section class="announcement" aria-label="Son duyurular">
+      <div class="announcement-title">SON DUYURULAR</div>
+
+      <div class="notice">
+        <span class="notice-date">[01]</span>
+        <span>Yeni yayın programı çok yakında açıklanacak!</span>
+      </div>
+
+      <div class="notice">
+        <span class="notice-date">[02]</span>
+        <span>Yayın sırasında Discord'a katılmayı unutma.</span>
+      </div>
+
+      <div class="notice">
+        <span class="notice-date">[03]</span>
+        <span>Yeni içerikler ve sürprizler hazırlanıyor.</span>
+      </div>
+    </section>
+
+    <nav class="links">
+      <a class="btn btn-kick" href="https://kick.com/katiya" target="_blank" rel="noopener">
+        <span class="icon">🎮</span>
+        Kick'te İzle
+      </a>
+
+      <a class="btn" href="https://instagram.com/katiya" target="_blank" rel="noopener">
+        <span class="icon">📸</span>
+        Instagram
+      </a>
+
+      <a class="btn" href="https://tiktok.com/@katiya" target="_blank" rel="noopener">
+        <span class="icon">🎵</span>
+        TikTok
+      </a>
+
+      <a class="btn" href="#" target="_blank" rel="noopener">
+        <span class="icon">💬</span>
+        Discord'a Katıl
+      </a>
+    </nav>
+
+    <p class="footer">
+      yayın zamanı <span class="heart">♥</span> katiya
+    </p>
+  </main>
 
 <script>
+  const cursor = document.getElementById('cursor');
+  const cursorDot = document.getElementById('cursor-dot');
+  const profileCard = document.getElementById('profileCard');
+
+  document.addEventListener('mousemove', (event) => {
+    cursor.style.left = `${event.clientX}px`;
+    cursor.style.top = `${event.clientY}px`;
+
+    cursorDot.style.left = `${event.clientX}px`;
+    cursorDot.style.top = `${event.clientY}px`;
+
+    const rect = profileCard.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+
+    if(
+      event.clientX >= rect.left &&
+      event.clientX <= rect.right &&
+      event.clientY >= rect.top &&
+      event.clientY <= rect.bottom
+    ){
+      profileCard.style.transform =
+        `rotateY(${x * 8}deg) rotateX(${y * -8}deg)`;
+    }else{
+      profileCard.style.transform = 'rotateY(0deg) rotateX(0deg)';
+    }
+  });
+
+  document.querySelectorAll('a,button').forEach((element) => {
+    element.addEventListener('mouseenter', () => {
+      document.body.classList.add('cursor-hover');
+    });
+
+    element.addEventListener('mouseleave', () => {
+      document.body.classList.remove('cursor-hover');
+    });
+  });
+
   const sparkles = document.getElementById('sparkles');
-  for (let i = 0; i < 22; i++) {
-    const s = document.createElement('div');
-    s.className = 'sparkle' + (Math.random() > 0.72 ? ' big' : '');
-    s.style.left = Math.random() * 100 + 'vw';
-    s.style.animationDuration = (6 + Math.random() * 5) + 's';
-    s.style.animationDelay = (-Math.random() * 8) + 's';
-    s.style.opacity = (0.15 + Math.random() * 0.45).toFixed(2);
-    sparkles.appendChild(s);
+
+  for(let i = 0; i < 20; i++){
+    const sparkle = document.createElement('div');
+    sparkle.className = 'sparkle';
+    sparkle.style.left = `${Math.random() * 100}vw`;
+    sparkle.style.animationDuration = `${6 + Math.random() * 5}s`;
+    sparkle.style.animationDelay = `${-Math.random() * 8}s`;
+    sparkle.style.opacity = `${.15 + Math.random() * .45}`;
+    sparkles.appendChild(sparkle);
   }
 
   const rain = document.getElementById('rain');
-  const COUNT = 24;
-  for (let i = 0; i < COUNT; i++) {
-    const d = document.createElement('div');
-    d.className = 'drop';
-    d.style.left = Math.random() * 100 + 'vw';
-    d.style.animationDuration = (3.8 + Math.random() * 3.8) + 's';
-    d.style.animationDelay = (-Math.random() * 9) + 's';
-    d.style.height = (16 + Math.random() * 20) + 'px';
-    d.style.opacity = (0.12 + Math.random() * 0.18).toFixed(2);
-    rain.appendChild(d);
-  }
-</script>
 
+  for(let i = 0; i < 24; i++){
+    const drop = document.createElement('div');
+    drop.className = 'drop';
+    drop.style.left = `${Math.random() * 100}vw`;
+    drop.style.height = `${16 + Math.random() * 20}px`;
+    drop.style.animationDuration = `${3.8 + Math.random() * 3.8}s`;
+    drop.style.animationDelay = `${-Math.random() * 9}s`;
+    rain.appendChild(drop);
+  }
+
+  const mist = document.getElementById('mist');
+
+  ['one','two'].forEach((className) => {
+    const cloud = document.createElement('div');
+    cloud.className = `mist ${className}`;
+    mist.appendChild(cloud);
+  });
+</script>
 </body>
 </html>
