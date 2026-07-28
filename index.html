@@ -42,10 +42,10 @@
     inset:0;
     pointer-events:none;
     background:
-      radial-gradient(circle at 20% 20%, rgba(168,85,247,0.03), transparent 8%),
-      radial-gradient(circle at 80% 30%, rgba(240,171,252,0.02), transparent 6%),
+      radial-gradient(circle at 20% 20%, rgba(168,85,247,0.03), transparent 5%),
+      radial-gradient(circle at 80% 30%, rgba(240,171,252,0.02), transparent 8%),
       radial-gradient(circle at 50% 80%, rgba(168,85,247,0.025), transparent 10%);
-    opacity:.45;
+    opacity:.50;
     z-index:0;
   }
 
@@ -54,8 +54,48 @@
     position:fixed;
     inset:0;
     pointer-events:none;
-    background:linear-gradient(120deg, rgba(255,255,255,0.01), transparent 40%, rgba(255,255,255,0.005), transparent 70%);
+    background:
+      linear-gradient(120deg, rgba(255,255,255,0.01), transparent 40%, rgba(255,255,255,0.005), transparent 70%),
+      radial-gradient(circle at 50% 50%, rgba(168,85,247,0.03), transparent 40%);
     z-index:1;
+  }
+
+  #sparkles{
+    position:fixed;
+    inset:0;
+    z-index:2;
+    pointer-events:none;
+    overflow:hidden;
+  }
+
+  .sparkle{
+    position:absolute;
+    width:3px;
+    height:3px;
+    border-radius:50%;
+    background:rgba(216,180,254,0.95);
+    box-shadow:0 0 8px rgba(168,85,247,0.55);
+    opacity:.55;
+    animation:drift linear infinite;
+  }
+
+  .sparkle.big{
+    width:5px;
+    height:5px;
+    background:rgba(240,171,252,0.9);
+    box-shadow:0 0 10px rgba(240,171,252,0.5);
+  }
+
+  @keyframes drift{
+    0%{
+      transform:translateY(-10vh) translateX(0) scale(0.9);
+      opacity:0;
+    }
+    15%{opacity:.7;}
+    100%{
+      transform:translateY(115vh) translateX(25px) scale(1.05);
+      opacity:0;
+    }
   }
 
   #rain{
@@ -323,6 +363,7 @@
 </head>
 <body>
 
+<div id="sparkles" aria-hidden="true"></div>
 <div id="rain" aria-hidden="true"></div>
 
 <main>
@@ -355,9 +396,19 @@
 </main>
 
 <script>
+  const sparkles = document.getElementById('sparkles');
+  for (let i = 0; i < 18; i++) {
+    const s = document.createElement('div');
+    s.className = 'sparkle' + (Math.random() > 0.7 ? ' big' : '');
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.animationDuration = (7 + Math.random() * 6) + 's';
+    s.style.animationDelay = Math.random() * 6 + 's';
+    s.style.opacity = (0.18 + Math.random() * 0.4).toFixed(2);
+    sparkles.appendChild(s);
+  }
+
   const rain = document.getElementById('rain');
   const COUNT = 14;
-
   for (let i = 0; i < COUNT; i++) {
     const d = document.createElement('div');
     d.className = 'drop';
