@@ -13,15 +13,7 @@
 :root{--bg-1:#130a25;--bg-2:#0a0712;--bg-3:#050309;--purple:#a855f7;--pink:#f0abfc;--green:#53fc18;--red:#ff5577;--text:#f5edff;--text-dim:#b399d4;--black:#050208}
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%}
-body{
-  min-height:100vh;overflow-x:hidden;color:var(--text);
-  font-family:'VT323',monospace;
-  background:radial-gradient(circle at 50% 16%,rgba(168,85,247,.12),transparent 16%),linear-gradient(180deg,var(--bg-1),var(--bg-2) 48%,var(--bg-3));
-  transition:background .5s ease,color .3s ease;
-  user-select:none;
-  -webkit-user-select:none;
-  -webkit-touch-callout:none;
-}
+body{min-height:100vh;overflow-x:hidden;color:var(--text);font-family:'VT323',monospace;background:radial-gradient(circle at 50% 16%,rgba(168,85,247,.12),transparent 16%),linear-gradient(180deg,var(--bg-1),var(--bg-2) 48%,var(--bg-3));transition:background .5s ease,color .3s ease;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 img,a,button{-webkit-user-drag:none}
 body.live-theme{--bg-1:#091d19;--bg-2:#07120f;--purple:#22c55e;--pink:#86efac;--text-dim:#a7d8b4}
 body.offline-theme{--bg-1:#130a25;--bg-2:#0a0712;--purple:#a855f7;--pink:#f0abfc;--text-dim:#b399d4}
@@ -230,106 +222,314 @@ function playPixelSound(type='hover'){
     oscillator.stop(audioContext.currentTime+sound[1]);
   }catch(error){}
 }
-function updateTheme(state){body.classList.remove('live-theme','offline-theme','error-theme');body.classList.add(state==='live'?'live-theme':state==='error'?'error-theme':'offline-theme')}
-function updateStatus(state){status.classList.toggle('offline',state==='offline');status.classList.toggle('error',state==='error');statusText.textContent={live:'CANLI',offline:'OFFLINE',error:'API HATASI'}[state];updateTheme(state)}
-function getCategory(data){return data?.category?.name||data?.category?.slug||data?.categories?.[0]?.name||'Kategori bilgisi yok'}
-function getTitle(data){return data?.session_title||data?.title||data?.stream_title||'Başlık bilgisi yok'}
-function getDate(data){const value=data?.created_at||data?.start_time||data?.started_at;return value?new Date(value).toLocaleString('tr-TR'):'Tarih bilgisi yok'}
-function showLastStream(data){if(!data)return;lastTitle.textContent=getTitle(data);lastCategory.textContent=data.category||getCategory(data);lastDate.textContent=getDate(data);lastStream.classList.remove('empty')}
+
+function updateTheme(state){
+  body.classList.remove('live-theme','offline-theme','error-theme');
+  body.classList.add(state==='live'?'live-theme':state==='error'?'error-theme':'offline-theme');
+}
+
+function updateStatus(state){
+  status.classList.toggle('offline',state==='offline');
+  status.classList.toggle('error',state==='error');
+  statusText.textContent={live:'CANLI',offline:'OFFLINE',error:'API HATASI'}[state];
+  updateTheme(state);
+}
+
+function getCategory(data){
+  return data?.category?.name||data?.category?.slug||data?.categories?.[0]?.name||'Kategori bilgisi yok';
+}
+
+function getTitle(data){
+  return data?.session_title||data?.title||data?.stream_title||'Başlık bilgisi yok';
+}
+
+function getDate(data){
+  const value=data?.created_at||data?.start_time||data?.started_at||data?.date;
+  return value?new Date(value).toLocaleString('tr-TR'):'Tarih bilgisi yok';
+}
+
+function showLastStream(data){
+  if(!data)return;
+  lastTitle.textContent=getTitle(data);
+  lastCategory.textContent=data.category?.name||data.category||getCategory(data);
+  lastDate.textContent=getDate(data);
+  lastStream.classList.remove('empty');
+}
+
+function normalizeLastStream(data){
+  if(!data)return null;
+  if(Array.isArray(data))return data[0]||null;
+  return data.data?.[0]||data.videos?.[0]||data.streams?.[0]||data;
+}
+
+async function getLastStreamFromApi(channel){
+  const endpoints=[
+    'https://kick.com/api/v2/channels/katiya/videos',
+    'https://kick.com/api/v2/channels/katiya/streams',
+    'https://kick.com/api/v2/channels/katiya'
+  ];
+
+  for(const endpoint of endpoints){
+    try{
+      const response=await fetch(endpoint,{
+        headers:{Accept:'application/json'},
+        cache:'no-store'
+      });
+
+      if(!response.ok)continue;
+
+      const data=await response.json();
+      const result=normalizeLastStream(data);
+
+      if(result&&(getTitle(result)!=='Başlık bilgisi yok'||getDate(result)!=='Tarih bilgisi yok')){
+        return result;
+      }
+    }catch(error){}
+  }
+
+  return channel?.last_stream||channel?.recent_streams?.[0]||null;
+}
 
 async function checkKickLiveStatus(){
   errorMessage.hidden=true;
+
   try{
-    const response=await fetch('https://kick.com/api/v2/channels/katiya',{headers:{Accept:'application/json'},cache:'no-store'});
+    const response=await fetch('https://kick.com/api/v2/channels/katiya',{
+      headers:{Accept:'application/json'},
+      cache:'no-store'
+    });
+
     if(!response.ok)throw new Error('HTTP '+response.status);
-    const channel=await response.json(),stream=channel.livestream,isLive=Boolean(stream);
+
+    const channel=await response.json();
+    const stream=channel.livestream;
+    const isLive=Boolean(stream);
+
     updateStatus(isLive?'live':'offline');
+
     if(isLive){
       frame.src=`https://player.kick.com/katiya?autoplay=true&muted=true&parent=${encodeURIComponent(location.hostname||'localhost')}`;
-      panel.classList.add('show');category.textContent=getCategory(stream);title.textContent=getTitle(stream);
-      localStorage.setItem('katyaLastStream',JSON.stringify({title:getTitle(stream),category:getCategory(stream),created_at:stream.created_at||stream.start_time}));
+      panel.classList.add('show');
+      category.textContent=getCategory(stream);
+      title.textContent=getTitle(stream);
+
+      localStorage.setItem('katyaLastStream',JSON.stringify({
+        title:getTitle(stream),
+        category:getCategory(stream),
+        created_at:stream.created_at||stream.start_time
+      }));
     }else{
-      panel.classList.remove('show');frame.removeAttribute('src');category.textContent='Yayın aktif değil';title.textContent='Şu anda canlı yayın yok';
+      panel.classList.remove('show');
+      frame.removeAttribute('src');
+      category.textContent='Yayın aktif değil';
+      title.textContent='Şu anda canlı yayın yok';
+
       const saved=localStorage.getItem('katyaLastStream');
-      if(saved)showLastStream(JSON.parse(saved));else if(channel.last_stream)showLastStream(channel.last_stream);
+
+      if(saved){
+        showLastStream(JSON.parse(saved));
+      }else{
+        const latestStream=await getLastStreamFromApi(channel);
+
+        if(latestStream){
+          showLastStream(latestStream);
+          localStorage.setItem('katyaLastStream',JSON.stringify(latestStream));
+        }
+      }
     }
   }catch(error){
-    updateStatus('error');panel.classList.remove('show');frame.removeAttribute('src');errorMessage.hidden=false;
+    updateStatus('error');
+    panel.classList.remove('show');
+    frame.removeAttribute('src');
+    errorMessage.hidden=false;
     errorMessage.textContent='⚠ Kick API’ye ulaşılamadı. İnternet bağlantısını veya API erişimini kontrol edin.';
     console.warn('Kick API kontrolü başarısız:',error);
   }
 }
 
-function openPopup(id){const popup=document.getElementById(id);popup.classList.add('open');popup.setAttribute('aria-hidden','false');body.classList.add('modal-active');playPixelSound('click')}
-function closePopup(id){const popup=document.getElementById(id);popup.classList.remove('open');popup.setAttribute('aria-hidden','true');if(!document.querySelector('.popup-overlay.open'))body.classList.remove('modal-active')}
+function openPopup(id){
+  const popup=document.getElementById(id);
+  popup.classList.add('open');
+  popup.setAttribute('aria-hidden','false');
+  body.classList.add('modal-active');
+  playPixelSound('click');
+}
+
+function closePopup(id){
+  const popup=document.getElementById(id);
+  popup.classList.remove('open');
+  popup.setAttribute('aria-hidden','true');
+  if(!document.querySelector('.popup-overlay.open'))body.classList.remove('modal-active');
+}
+
 document.getElementById('openSetup').onclick=()=>openPopup('setupOverlay');
 document.getElementById('openSupport').onclick=()=>openPopup('supportOverlay');
 document.querySelectorAll('[data-close]').forEach(button=>button.onclick=()=>closePopup(button.dataset.close));
-document.querySelectorAll('.popup-overlay').forEach(overlay=>overlay.onclick=event=>{if(event.target===overlay)closePopup(overlay.id)});
-document.addEventListener('keydown',event=>{if(event.key==='Escape')document.querySelectorAll('.popup-overlay.open').forEach(popup=>closePopup(popup.id))});
+document.querySelectorAll('.popup-overlay').forEach(overlay=>overlay.onclick=event=>{
+  if(event.target===overlay)closePopup(overlay.id);
+});
+document.addEventListener('keydown',event=>{
+  if(event.key==='Escape'){
+    document.querySelectorAll('.popup-overlay.open').forEach(popup=>closePopup(popup.id));
+  }
+});
 
 document.querySelectorAll('.btn,.producer,.support-link,.kick-live-link,.setup-floating').forEach(element=>{
   element.addEventListener('mouseenter',()=>playPixelSound('hover'));
-  element.addEventListener('click',event=>{playPixelSound('click');for(let i=0;i<5;i++)createParticle(event.clientX,event.clientY,i%2?'heart':'star')});
+  element.addEventListener('click',event=>{
+    playPixelSound('click');
+    for(let i=0;i<5;i++)createParticle(event.clientX,event.clientY,i%2?'heart':'star');
+  });
 });
 
 const profileCard=document.getElementById('profileCard');
+
 profileCard.onclick=event=>{
-  const kiss=document.createElement('span');kiss.className='click-kiss';kiss.textContent='💋';kiss.style.left=event.pageX+'px';kiss.style.top=event.pageY+'px';document.body.appendChild(kiss);
+  const kiss=document.createElement('span');
+  kiss.className='click-kiss';
+  kiss.textContent='💋';
+  kiss.style.left=event.pageX+'px';
+  kiss.style.top=event.pageY+'px';
+  document.body.appendChild(kiss);
+
   for(let i=0;i<10;i++)createParticle(event.clientX,event.clientY,i%3?'heart':'star');
   setTimeout(()=>kiss.remove(),1000);
 };
 
 let animationFrame=0,mouseX=0,mouseY=0,lastTrail=0;
+
 document.addEventListener('mousemove',event=>{
-  mouseX=event.clientX;mouseY=event.clientY;mouseGlow.style.left=mouseX+'px';mouseGlow.style.top=mouseY+'px';mouseGlow.style.opacity='1';
-  if(performance.now()-lastTrail>32){createParticle(mouseX,mouseY,Math.random()>.45?'heart':'star');lastTrail=performance.now()}
+  mouseX=event.clientX;
+  mouseY=event.clientY;
+  mouseGlow.style.left=mouseX+'px';
+  mouseGlow.style.top=mouseY+'px';
+  mouseGlow.style.opacity='1';
+
+  if(performance.now()-lastTrail>32){
+    createParticle(mouseX,mouseY,Math.random()>.45?'heart':'star');
+    lastTrail=performance.now();
+  }
+
   if(animationFrame)return;
+
   animationFrame=requestAnimationFrame(()=>{
-    const rect=profileCard.getBoundingClientRect(),inside=mouseX>=rect.left&&mouseX<=rect.right&&mouseY>=rect.top&&mouseY<=rect.bottom;
-    profileCard.style.transform=inside?`rotateY(${((mouseX-rect.left)/rect.width-.5)*16}deg) rotateX(${((mouseY-rect.top)/rect.height-.5)*-16}deg) scale(1.035)`:'rotateY(0deg) rotateX(0deg) scale(1)';
+    const rect=profileCard.getBoundingClientRect();
+    const inside=mouseX>=rect.left&&mouseX<=rect.right&&mouseY>=rect.top&&mouseY<=rect.bottom;
+
+    profileCard.style.transform=inside
+      ?`rotateY(${((mouseX-rect.left)/rect.width-.5)*16}deg) rotateX(${((mouseY-rect.top)/rect.height-.5)*-16}deg) scale(1.035)`
+      :'rotateY(0deg) rotateX(0deg) scale(1)';
+
     animationFrame=0;
   });
 });
-document.addEventListener('mouseleave',()=>{mouseGlow.style.opacity='0';profileCard.style.transform='rotateY(0deg) rotateX(0deg) scale(1)'});
 
-const sparkles=document.getElementById('sparkles'),rain=document.getElementById('rain');
-for(let i=0;i<24;i++){const sparkle=document.createElement('div');sparkle.className='sparkle';sparkle.style.left=Math.random()*100+'vw';sparkle.style.animationDuration=6+Math.random()*5+'s';sparkle.style.animationDelay=-Math.random()*8+'s';sparkles.appendChild(sparkle)}
-for(let i=0;i<24;i++){const drop=document.createElement('div');drop.className='drop';drop.style.left=Math.random()*100+'vw';drop.style.animationDuration=3.8+Math.random()*3.8+'s';drop.style.animationDelay=-Math.random()*9+'s';rain.appendChild(drop)}
+document.addEventListener('mouseleave',()=>{
+  mouseGlow.style.opacity='0';
+  profileCard.style.transform='rotateY(0deg) rotateX(0deg) scale(1)';
+});
+
+const sparkles=document.getElementById('sparkles');
+const rain=document.getElementById('rain');
+
+for(let i=0;i<24;i++){
+  const sparkle=document.createElement('div');
+  sparkle.className='sparkle';
+  sparkle.style.left=Math.random()*100+'vw';
+  sparkle.style.animationDuration=6+Math.random()*5+'s';
+  sparkle.style.animationDelay=-Math.random()*8+'s';
+  sparkles.appendChild(sparkle);
+}
+
+for(let i=0;i<24;i++){
+  const drop=document.createElement('div');
+  drop.className='drop';
+  drop.style.left=Math.random()*100+'vw';
+  drop.style.animationDuration=3.8+Math.random()*3.8+'s';
+  drop.style.animationDelay=-Math.random()*9+'s';
+  rain.appendChild(drop);
+}
+
 const mist=document.getElementById('mist');
-['one','two'].forEach(name=>{const cloud=document.createElement('div');cloud.className='mist '+name;mist.appendChild(cloud)});
+
+['one','two'].forEach(name=>{
+  const cloud=document.createElement('div');
+  cloud.className='mist '+name;
+  mist.appendChild(cloud);
+});
+
 const particles=document.getElementById('particles');
 
 function createParticle(x,y,type){
   if(particles.childElementCount>=45)particles.firstElementChild.remove();
-  const particle=document.createElement('span');particle.className='pixel-particle '+type;particle.style.left=x+'px';particle.style.top=y+'px';
-  particle.style.setProperty('--x',Math.random()*70-35+'px');particle.style.setProperty('--y',Math.random()*55-45+'px');particles.appendChild(particle);
+
+  const particle=document.createElement('span');
+  particle.className='pixel-particle '+type;
+  particle.style.left=x+'px';
+  particle.style.top=y+'px';
+  particle.style.setProperty('--x',Math.random()*70-35+'px');
+  particle.style.setProperty('--y',Math.random()*55-45+'px');
+  particles.appendChild(particle);
+
   setTimeout(()=>particle.remove(),760);
 }
 
-const messages=['Hoş geldin! Katiya henüz kahvesini içmedi ama yayın modunda.','Bildirim geldi: Buraya kadar geldiysen artık ekiptesin.','Sistem kontrolü tamamlandı. Katiya hâlâ çok havalı.','Katiya evrenine hoş geldin.'];
+const messages=[
+  'Hoş geldin! Katiya henüz kahvesini içmedi ama yayın modunda.',
+  'Bildirim geldi: Buraya kadar geldiysen artık ekiptesin.',
+  'Sistem kontrolü tamamlandı. Katiya hâlâ çok havalı.',
+  'Katiya evrenine hoş geldin.'
+];
+
 function showEntryNotification(){
-  const notification=document.createElement('aside');notification.className='entry-notification';
+  const notification=document.createElement('aside');
+  notification.className='entry-notification';
   notification.innerHTML=`<button class="entry-notification-close" type="button">X</button><div class="entry-notification-title">✦ KATYA BİLDİRİMİ</div><div class="entry-notification-text">${messages[Math.floor(Math.random()*messages.length)]}</div>`;
   document.body.appendChild(notification);
-  const close=()=>{notification.classList.add('hide');setTimeout(()=>notification.remove(),450)};
-  notification.querySelector('button').onclick=close;setTimeout(close,6500);
+
+  const close=()=>{
+    notification.classList.add('hide');
+    setTimeout(()=>notification.remove(),450);
+  };
+
+  notification.querySelector('button').onclick=close;
+  setTimeout(close,6500);
 }
+
 showEntryNotification();
 
 let input='',easterMode=false;
+
 document.addEventListener('keydown',event=>{
   if(event.key.length!==1)return;
-  input+=(event.key||'').toUpperCase();input=input.slice(-6);
+
+  input+=(event.key||'').toUpperCase();
+  input=input.slice(-6);
+
   if(input==='KATIYA'){
-    easterMode=!easterMode;body.classList.toggle('easter-mode',easterMode);playPixelSound('egg');
-    const message=document.createElement('div');message.className='easter-message';
-    message.innerHTML=easterMode?'✦ KATIYA MODE AKTİF ✦<br><small>SECRET PIXEL POWER</small>':'✦ KATIYA MODE KAPANDI ✦';
-    document.body.appendChild(message);setTimeout(()=>message.remove(),3000);input='';
+    easterMode=!easterMode;
+    body.classList.toggle('easter-mode',easterMode);
+    playPixelSound('egg');
+
+    const message=document.createElement('div');
+    message.className='easter-message';
+    message.innerHTML=easterMode
+      ?'✦ KATIYA MODE AKTİF ✦<br><small>SECRET PIXEL POWER</small>'
+      :'✦ KATIYA MODE KAPANDI ✦';
+
+    document.body.appendChild(message);
+    setTimeout(()=>message.remove(),3000);
+    input='';
   }
 });
-try{const saved=localStorage.getItem('katyaLastStream');if(saved)showLastStream(JSON.parse(saved))}catch(error){}
-checkKickLiveStatus();setInterval(checkKickLiveStatus,60000);
+
+try{
+  const saved=localStorage.getItem('katyaLastStream');
+  if(saved)showLastStream(JSON.parse(saved));
+}catch(error){}
+
+checkKickLiveStatus();
+setInterval(checkKickLiveStatus,60000);
 </script>
 </body>
 </html>
