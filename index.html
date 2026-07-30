@@ -4,1267 +4,332 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KATYA // Linkler</title>
-
 <link rel="icon" href="https://i.ibb.co/Qj61nLWP/kick-streaming-app-logo-icon-flat-black-and-white-rounded-square-without-backgorund-free-png.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 
 <style>
-:root{
-  --bg-1:#130a25;
-  --bg-2:#0a0712;
-  --bg-3:#050309;
-  --purple:#a855f7;
-  --pink:#f0abfc;
-  --green:#53fc18;
-  --red:#ff5577;
-  --text:#f5edff;
-  --text-dim:#b399d4;
-  --black:#050208;
-}
-
+:root{--bg-1:#130a25;--bg-2:#0a0712;--bg-3:#050309;--purple:#a855f7;--pink:#f0abfc;--green:#53fc18;--red:#ff5577;--text:#f5edff;--text-dim:#b399d4;--black:#050208}
 *{box-sizing:border-box}
-
-html,body{
-  margin:0;
-  min-height:100%;
-}
-
+html,body{margin:0;min-height:100%}
 body{
-  min-height:100vh;
-  overflow-x:hidden;
-  color:var(--text);
+  min-height:100vh;overflow-x:hidden;color:var(--text);
   font-family:'VT323',monospace;
-  background:
-    radial-gradient(circle at 50% 16%,rgba(168,85,247,.12),transparent 16%),
-    radial-gradient(circle at 18% 28%,rgba(240,171,252,.05),transparent 10%),
-    linear-gradient(180deg,var(--bg-1),var(--bg-2) 48%,var(--bg-3));
-}
-
-body.easter-mode{
-  --purple:#22d3ee;
-  --pink:#fef08a;
-  --green:#fb7185;
-  filter:saturate(1.25);
-}
-
-body::before,
-body::after{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-}
-
-body::before{
-  z-index:0;
-  opacity:.65;
-  background:
-    radial-gradient(circle at 20% 20%,rgba(168,85,247,.06),transparent 6%),
-    radial-gradient(circle at 80% 30%,rgba(240,171,252,.04),transparent 9%);
-}
-
-body::after{
-  z-index:2;
-  opacity:.13;
-  background:
-    linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
-  background-size:6px 6px;
-  mix-blend-mode:screen;
-}
-
-#sparkles,#rain,#mist,#particles{
-  position:fixed;
-  inset:0;
-  overflow:hidden;
-  pointer-events:none;
-}
-
-#sparkles,#rain,#mist{z-index:1}
-#particles{z-index:12}
-
-.modal-active #sparkles,
-.modal-active #rain,
-.modal-active #mist,
-.modal-active #particles{
-  display:none;
-}
-
-.sparkle{
-  position:absolute;
-  width:4px;
-  height:4px;
-  background:var(--pink);
-  box-shadow:0 0 10px var(--purple);
-  animation:drift linear infinite;
-}
-
-@keyframes drift{
-  0%{transform:translateY(-18vh);opacity:0}
-  12%{opacity:.7}
-  100%{transform:translateY(118vh) translateX(30px);opacity:0}
-}
-
-.drop{
-  position:absolute;
-  top:-25vh;
-  width:2px;
-  height:34px;
-  background:linear-gradient(to bottom,transparent,rgba(216,180,254,.85),transparent);
-  opacity:.22;
-  animation:rainFall linear infinite;
-}
-
-@keyframes rainFall{
-  0%{transform:translateY(-25vh);opacity:0}
-  8%{opacity:.22}
-  100%{transform:translateY(140vh);opacity:0}
-}
-
-.mist{
-  position:absolute;
-  border-radius:50%;
-  background:radial-gradient(circle,rgba(168,85,247,.18),rgba(168,85,247,.06) 40%,transparent 72%);
-  filter:blur(12px);
-  opacity:.2;
-  animation:mistFloat ease-in-out infinite alternate;
-}
-
-.mist.one{
-  width:220px;
-  height:220px;
-  left:-50px;
-  top:18%;
-}
-
-.mist.two{
-  width:280px;
-  height:280px;
-  right:-90px;
-  top:48%;
-}
-
-@keyframes mistFloat{
-  from{transform:translate(0,0) scale(1)}
-  to{transform:translate(18px,-12px) scale(1.08)}
-}
-
-main{
-  position:relative;
-  z-index:3;
-  width:100%;
-  max-width:460px;
-  min-height:100vh;
-  margin:0 auto;
-  padding:56px 20px 34px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-}
-
-.hero-wrap{
-  perspective:900px;
-  margin-bottom:18px;
-}
-
-.hero{
-  position:relative;
-  width:360px;
-  height:440px;
-  overflow:hidden;
-  border-radius:8px;
-  cursor:pointer;
-  transform-style:preserve-3d;
-  transition:transform .15s ease-out,filter .2s ease;
-  background:rgba(255,255,255,.02);
-  box-shadow:
-    0 0 0 4px var(--black),
-    0 0 0 7px var(--purple),
-    0 0 0 10px var(--black),
-    0 0 22px rgba(168,85,247,.35);
-}
-
-.hero:hover{
-  filter:brightness(1.1);
-  box-shadow:
-    0 0 0 4px var(--black),
-    0 0 0 7px var(--pink),
-    0 0 0 10px var(--black),
-    0 0 28px rgba(240,171,252,.5);
-}
-
-.hero::before,
-.hero::after{
-  content:"";
-  position:absolute;
-  z-index:4;
-  width:28px;
-  height:28px;
-  pointer-events:none;
-  background:
-    linear-gradient(var(--pink),var(--pink)) 0 0/10px 10px no-repeat,
-    linear-gradient(var(--pink),var(--pink)) 100% 100%/10px 10px no-repeat;
-}
-
-.hero::before{top:8px;left:8px}
-.hero::after{right:8px;bottom:8px;transform:rotate(180deg)}
-
-.hero img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  object-position:41% center;
-  transform:scale(1.18);
-  filter:drop-shadow(0 8px 12px rgba(0,0,0,.35));
-}
-
-.live-dot{
-  position:absolute;
-  z-index:5;
-  top:15px;
-  right:10px;
-  display:flex;
-  align-items:center;
-  gap:6px;
-  padding:4px 8px;
-  color:var(--green);
-  font-size:14px;
-  letter-spacing:1px;
-  background:rgba(5,2,8,.78);
-  border:2px solid var(--green);
-}
-
-.live-dot.offline{
-  color:var(--red);
-  border-color:var(--red);
-}
-
-.live-dot .dot{
-  width:8px;
-  height:8px;
-  background:var(--green);
-  box-shadow:0 0 6px var(--green);
-  animation:blink 1s steps(1) infinite;
-}
-
-.live-dot.offline .dot{
-  background:var(--red);
-  box-shadow:0 0 6px var(--red);
-}
-
-@keyframes blink{
-  0%,49%{opacity:1}
-  50%,100%{opacity:.2}
-}
-
-.click-kiss{
-  position:absolute;
-  z-index:40;
-  pointer-events:none;
-  color:#ff78c8;
-  font-family:Arial,sans-serif;
-  font-size:21px;
-  line-height:1;
-  text-shadow:0 0 6px #ff78c8,2px 2px 0 var(--black);
-  transform:translate(-50%,-50%);
-  animation:kissStay .25s ease-out forwards;
-}
-
-@keyframes kissStay{
-  from{opacity:0;transform:translate(-50%,-50%) scale(.8)}
-  to{opacity:1;transform:translate(-50%,-50%) scale(1)}
-}
-
-.name-wrap{
-  position:relative;
-  margin:8px 0;
-}
-
-h1.name{
-  position:relative;
-  margin:0;
-  font-family:'Press Start 2P',monospace;
-  font-size:24px;
-  line-height:1.5;
-  letter-spacing:1px;
-  text-align:center;
-  text-shadow:3px 3px 0 var(--black),0 0 12px rgba(168,85,247,.35);
-}
-
-.cursor-blink{
-  color:var(--green);
-  animation:blink 1s steps(1) infinite;
-}
-
-.tag{
-  margin:0 0 22px;
-  color:var(--text-dim);
-  font-size:19px;
-  letter-spacing:5px;
-  text-transform:uppercase;
-  text-align:center;
-}
-
-.divider{
-  width:100%;
-  height:6px;
-  margin-bottom:22px;
-  opacity:.55;
-  background-image:linear-gradient(90deg,var(--purple) 0 8px,transparent 8px 14px);
-  background-size:14px 6px;
-}
-
-/* Kick canlı yayın alanı */
-.kick-live{
-  width:100%;
-  display:none;
-  margin-bottom:20px;
-  padding:12px;
-  background:rgba(28,15,54,.72);
-  border:2px solid var(--green);
-  box-shadow:0 0 0 1px var(--black),0 5px 0 var(--black),0 0 18px rgba(83,252,24,.2);
-}
-
-.kick-live.show{
-  display:block;
-}
-
-.kick-live-title{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  margin-bottom:12px;
-  color:var(--green);
-  font-family:'Press Start 2P',monospace;
-  font-size:11px;
-  line-height:1.5;
-}
-
-.kick-live-badge{
-  padding:4px 7px;
-  color:var(--black);
-  background:var(--green);
-  font-size:13px;
-  animation:blink 1s steps(1) infinite;
-}
-
-.kick-live-frame{
-  position:relative;
-  width:100%;
-  aspect-ratio:16/9;
-  overflow:hidden;
-  background:#050208;
-  border:2px solid var(--purple);
-}
-
-.kick-live-frame iframe{
-  display:block;
-  width:100%;
-  height:100%;
-  border:0;
-}
-
-.kick-live-link{
-  display:block;
-  margin-top:10px;
-  color:var(--pink);
-  font-size:17px;
-  text-align:center;
-  text-decoration:none;
-}
-
-.kick-live-link:hover{
-  color:#fff;
-}
-
-.announcement{
-  width:100%;
-  margin-bottom:20px;
-  padding:15px;
-  border:2px solid rgba(240,171,252,.4);
-  background:rgba(28,15,54,.62);
-  box-shadow:0 0 0 1px var(--black),0 5px 0 var(--black);
-}
-
-.announcement-title{
-  margin-bottom:12px;
-  color:var(--pink);
-  font-family:'Press Start 2P',monospace;
-  font-size:12px;
-  line-height:1.5;
-  text-align:center;
-}
-
-.notice{
-  display:flex;
-  gap:10px;
-  align-items:flex-start;
-  padding:9px 4px;
-  border-top:1px dashed rgba(216,180,254,.28);
-  color:var(--text);
-  font-size:19px;
-  line-height:1.15;
-}
-
-.notice:first-of-type{border-top:0}
-.notice-date{flex:0 0 auto;color:var(--green);font-size:16px}
-
-.links{
-  width:100%;
-  display:flex;
-  flex-direction:column;
-  gap:16px;
-}
-
-.btn{
-  --button-color:var(--purple);
-  position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  min-height:56px;
-  padding:14px 18px;
-  color:var(--text);
-  font-family:'VT323',monospace;
-  font-size:22px;
-  letter-spacing:1px;
-  text-decoration:none;
-  text-transform:uppercase;
-  background:rgba(25,12,48,.88);
-  border:2px solid var(--button-color);
-  outline:2px solid var(--black);
-  box-shadow:0 5px 0 var(--black),inset 0 0 0 2px rgba(255,255,255,.04);
-  transition:transform .18s ease,color .18s ease,background .18s ease,box-shadow .18s ease;
-}
-
-.btn::before,
-.btn::after{
-  content:"";
-  position:absolute;
-  width:10px;
-  height:10px;
-  background:var(--button-color);
-  transition:.18s ease;
-}
-
-.btn::before{
-  top:-5px;
-  left:-5px;
-  border-right:3px solid var(--black);
-  border-bottom:3px solid var(--black);
-}
-
-.btn::after{
-  right:-5px;
-  bottom:-5px;
-  border-left:3px solid var(--black);
-  border-top:3px solid var(--black);
-}
-
-.btn:hover{
-  color:#fff;
-  background:rgba(72,34,120,.9);
-  transform:translateY(-3px);
-  box-shadow:0 5px 0 var(--black),0 0 18px rgba(168,85,247,.45);
-}
-
-.btn:active{
-  transform:translateY(3px);
-  box-shadow:0 1px 0 var(--black);
-}
-
-.btn-kick{
-  --button-color:var(--green);
-  color:#eaffe0;
-}
-
-.support-open{
-  --button-color:var(--pink);
-  margin-top:22px;
-}
-
-.icon{
-  font-size:20px;
-  filter:drop-shadow(1px 1px 0 var(--black));
-}
-
-.footer{
-  width:100%;
-  margin-top:30px;
-  padding-top:18px;
-  color:var(--text-dim);
-  font-size:15px;
-  letter-spacing:1px;
-  text-align:center;
-  border-top:1px dashed rgba(216,180,254,.22);
-}
-
-.heart{
-  color:var(--pink);
-  animation:beat 1.6s ease-in-out infinite;
-}
-
-@keyframes beat{
-  50%{transform:scale(1.15)}
-}
-
-.producer{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  margin-top:15px;
-  padding:9px 14px;
-  color:var(--text-dim);
-  font-family:'VT323',monospace;
-  font-size:17px;
-  letter-spacing:1px;
-  text-decoration:none;
-  background:rgba(28,15,54,.68);
-  border:2px solid rgba(168,85,247,.45);
-  box-shadow:0 0 0 2px var(--black),0 4px 0 var(--black);
-  transition:.2s ease;
-}
-
-.producer:hover{
-  color:#fff;
-  border-color:var(--pink);
-  transform:translateY(-2px);
-}
-
-.producer-label{text-transform:uppercase}
-
-.producer-name{
-  color:var(--pink);
-  font-family:'Press Start 2P',monospace;
-  font-size:11px;
-}
-
-.popup-overlay{
-  position:fixed;
-  inset:0;
-  z-index:20;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-  background:rgba(3,1,8,.78);
-  backdrop-filter:blur(5px);
-}
-
-.popup-overlay.open{display:flex}
-
-.popup{
-  position:relative;
-  width:min(420px,100%);
-  color:var(--text);
-  background:linear-gradient(145deg,#21113e,#0d0718);
-  border:3px solid var(--purple);
-  box-shadow:0 0 0 4px var(--black),0 0 35px rgba(168,85,247,.4);
-}
-
-.popup-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  padding:13px 15px;
-  color:var(--pink);
-  font-family:'Press Start 2P',monospace;
-  font-size:12px;
-  border-bottom:2px solid rgba(240,171,252,.35);
-}
-
-.popup-close{
-  padding:3px 7px;
-  color:var(--green);
-  font:inherit;
-  font-size:18px;
-  cursor:pointer;
-  background:transparent;
-  border:1px solid var(--green);
-}
-
-.popup-close:hover{
-  color:var(--black);
-  background:var(--green);
-}
-
-.popup-body{padding:18px}
-
-.counter-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-  margin-bottom:18px;
-}
-
-.counter{
-  padding:15px 10px;
-  text-align:center;
-  background:rgba(5,2,8,.58);
-  border:2px solid var(--purple);
-  box-shadow:0 3px 0 var(--black);
-}
-
-.counter.kick{border-color:var(--green)}
-
-.counter-icon{
-  display:block;
-  margin-bottom:8px;
-  font-size:25px;
-}
-
-.counter-label{
-  display:block;
-  color:var(--text-dim);
-  font-size:18px;
-}
-
-.counter-number{
-  display:block;
-  margin-top:4px;
-  color:var(--pink);
-  font-family:'Press Start 2P',monospace;
-  font-size:17px;
-}
-
-.counter.kick .counter-number{color:var(--green)}
-
-.popup-title{
-  margin:3px 0 12px;
-  color:var(--pink);
-  font-family:'Press Start 2P',monospace;
-  font-size:12px;
-  text-align:center;
-  line-height:1.6;
-}
-
-.popup-text{
-  margin:0 0 15px;
-  color:var(--text-dim);
-  font-size:19px;
-  text-align:center;
-}
-
-.support-links{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-
-.support-link{
-  display:block;
-  padding:12px;
-  color:var(--text);
-  font-size:21px;
-  text-align:center;
-  text-decoration:none;
-  background:rgba(28,15,54,.8);
-  border:2px solid var(--purple);
-  box-shadow:0 4px 0 var(--black);
-}
-
-.support-link:hover{
-  color:#fff;
-  border-color:var(--pink);
-  background:rgba(72,34,120,.85);
-}
-
-.entry-notification{
-  position:fixed;
-  z-index:50;
-  top:18px;
-  right:18px;
-  width:min(280px,calc(100% - 36px));
-  padding:12px 38px 12px 14px;
-  color:var(--text);
-  background:rgba(20,9,38,.96);
-  border:2px solid var(--pink);
-  box-shadow:0 0 0 3px var(--black),0 0 18px rgba(240,171,252,.4);
-  animation:entryNotificationIn .5s cubic-bezier(.22,1,.36,1) forwards;
-}
-
-.entry-notification.hide{
-  animation:entryNotificationOut .4s cubic-bezier(.55,0,1,.45) forwards;
-}
-
-.entry-notification-title{
-  margin-bottom:5px;
-  color:var(--pink);
-  font-family:'Press Start 2P',monospace;
-  font-size:10px;
-}
-
-.entry-notification-text{
-  color:var(--text-dim);
-  font-size:18px;
-  line-height:1.1;
-}
-
-.entry-notification-close{
-  position:absolute;
-  top:7px;
-  right:8px;
-  color:var(--green);
-  cursor:pointer;
-  background:transparent;
-  border:1px solid var(--green);
-}
-
-@keyframes entryNotificationIn{
-  from{opacity:0;transform:translateX(calc(100% + 30px))}
-  to{opacity:1;transform:translateX(0)}
-}
-
-@keyframes entryNotificationOut{
-  from{opacity:1;transform:translateX(0)}
-  to{opacity:0;transform:translateX(calc(100% + 30px))}
-}
-
-.pixel-particle{
-  position:fixed;
-  width:6px;
-  height:6px;
-  pointer-events:none;
-  transform:translate(-50%,-50%);
-  animation:particleFly .72s ease-out forwards;
-}
-
-.pixel-particle.star{
-  background:var(--pink);
-  box-shadow:0 0 7px var(--purple);
-}
-
-.pixel-particle.heart{
-  background:#ff78c8;
-  box-shadow:0 0 7px #ff78c8;
-}
-
-@keyframes particleFly{
-  to{
-    opacity:0;
-    transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y)));
-  }
-}
-
-.easter-message{
-  position:fixed;
-  z-index:30;
-  left:50%;
-  top:50%;
-  width:min(390px,calc(100% - 40px));
-  padding:18px 20px;
-  color:var(--pink);
-  font-family:'Press Start 2P',monospace;
-  font-size:13px;
-  line-height:1.8;
-  text-align:center;
-  background:rgba(13,7,24,.97);
-  border:3px solid var(--pink);
-  box-shadow:0 0 0 4px var(--black),0 0 26px rgba(240,171,252,.65);
-  transform:translate(-50%,-50%);
-  animation:easterIn 3s ease-in-out forwards;
-}
-
-@keyframes easterIn{
-  0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}
-  15%,80%{opacity:1;transform:translate(-50%,-50%) scale(1)}
-  100%{opacity:0;transform:translate(-50%,-50%) scale(.95)}
-}
-
-@media(max-width:420px){
-  main{padding-top:40px}
-
-  .hero{
-    width:300px;
-    height:360px;
-  }
-
-  h1.name{font-size:19px}
-  .producer-name{font-size:9px}
-  .popup-header{font-size:10px}
-  .counter-number{font-size:13px}
-  .easter-message{font-size:10px}
-}
-
-@media(prefers-reduced-motion:reduce){
-  *,*::before,*::after{
-    animation:none!important;
-    transition:none!important;
-  }
-}
+  background:radial-gradient(circle at 50% 16%,rgba(168,85,247,.12),transparent 16%),linear-gradient(180deg,var(--bg-1),var(--bg-2) 48%,var(--bg-3));
+  transition:background .5s ease,color .3s ease;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-touch-callout:none;
+}
+img,a,button{-webkit-user-drag:none}
+body.live-theme{--bg-1:#091d19;--bg-2:#07120f;--purple:#22c55e;--pink:#86efac;--text-dim:#a7d8b4}
+body.offline-theme{--bg-1:#130a25;--bg-2:#0a0712;--purple:#a855f7;--pink:#f0abfc;--text-dim:#b399d4}
+body.error-theme{--purple:#f59e0b;--pink:#fde68a}
+body.easter-mode{--purple:#22d3ee;--pink:#fef08a;--green:#fb7185;filter:saturate(1.25)}
+body::before,body::after{content:"";position:fixed;inset:0;pointer-events:none}
+body::before{z-index:0;opacity:.65;background:radial-gradient(circle at 20% 20%,rgba(168,85,247,.08),transparent 7%),radial-gradient(circle at 80% 30%,rgba(240,171,252,.06),transparent 9%)}
+body::after{z-index:2;opacity:.13;background:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:6px 6px;mix-blend-mode:screen}
+#sparkles,#rain,#mist,#particles{position:fixed;inset:0;overflow:hidden;pointer-events:none}
+#sparkles,#rain,#mist{z-index:1}#particles{z-index:12}
+.modal-active #sparkles,.modal-active #rain,.modal-active #mist,.modal-active #particles{display:none}
+#mouseGlow{position:fixed;z-index:11;width:150px;height:150px;border-radius:50%;pointer-events:none;opacity:0;background:radial-gradient(circle,rgba(240,171,252,.28),rgba(168,85,247,.12) 32%,transparent 72%);transform:translate(-50%,-50%);filter:blur(5px);transition:opacity .25s ease;mix-blend-mode:screen}
+.sparkle{position:absolute;width:4px;height:4px;background:var(--pink);box-shadow:0 0 10px var(--purple);animation:drift linear infinite}
+@keyframes drift{0%{transform:translateY(-18vh);opacity:0}12%{opacity:.7}100%{transform:translateY(118vh) translateX(30px);opacity:0}}
+.drop{position:absolute;top:-25vh;width:2px;height:34px;background:linear-gradient(transparent,rgba(216,180,254,.85),transparent);opacity:.22;animation:rainFall linear infinite}
+@keyframes rainFall{0%{transform:translateY(-25vh);opacity:0}8%{opacity:.22}100%{transform:translateY(140vh);opacity:0}}
+.mist{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(168,85,247,.18),transparent 72%);filter:blur(12px);opacity:.2;animation:mistFloat ease-in-out infinite alternate}
+.mist.one{width:220px;height:220px;left:-50px;top:18%}.mist.two{width:280px;height:280px;right:-90px;top:48%}
+@keyframes mistFloat{from{transform:translate(0,0) scale(1)}to{transform:translate(18px,-12px) scale(1.08)}}
+main{position:relative;z-index:3;width:100%;max-width:460px;min-height:100vh;margin:auto;padding:56px 20px 34px;display:flex;flex-direction:column;align-items:center}
+.hero-wrap{perspective:900px;margin-bottom:18px}
+.hero{position:relative;width:360px;height:440px;overflow:hidden;border-radius:8px;cursor:pointer;transform-style:preserve-3d;transition:transform .12s ease-out,filter .2s ease,box-shadow .2s ease;background:rgba(255,255,255,.02);box-shadow:0 0 0 4px var(--black),0 0 0 7px var(--purple),0 0 0 10px var(--black),0 0 22px rgba(168,85,247,.35)}
+.hero:hover{filter:brightness(1.15);box-shadow:0 0 0 4px var(--black),0 0 0 7px var(--pink),0 0 0 10px var(--black),0 0 36px rgba(240,171,252,.65)}
+.hero:active{transform:scale(.98)!important}
+.hero::before,.hero::after{content:"";position:absolute;z-index:4;width:28px;height:28px;pointer-events:none;background:linear-gradient(var(--pink),var(--pink)) 0 0/10px 10px no-repeat,linear-gradient(var(--pink),var(--pink)) 100% 100%/10px 10px no-repeat}
+.hero::before{top:8px;left:8px}.hero::after{right:8px;bottom:8px;transform:rotate(180deg)}
+.hero img{width:100%;height:100%;object-fit:cover;object-position:41% center;transform:scale(1.18);transition:transform .22s ease,filter .22s ease}
+.hero:hover img{transform:scale(1.27);filter:drop-shadow(0 0 20px var(--pink))}
+.live-dot{position:absolute;z-index:5;top:15px;right:10px;display:flex;align-items:center;gap:6px;padding:4px 8px;color:var(--green);font-size:14px;letter-spacing:1px;background:rgba(5,2,8,.78);border:2px solid var(--green)}
+.live-dot.offline{color:var(--red);border-color:var(--red)}.live-dot.error{color:#fbbf24;border-color:#fbbf24}
+.live-dot .dot{width:8px;height:8px;background:var(--green);box-shadow:0 0 6px var(--green);animation:blink 1s steps(1) infinite}
+.live-dot.offline .dot{background:var(--red);box-shadow:0 0 6px var(--red)}.live-dot.error .dot{background:#fbbf24;box-shadow:0 0 6px #fbbf24}
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:.2}}
+.click-kiss{position:absolute;z-index:40;pointer-events:none;color:#ff78c8;font:21px Arial;text-shadow:0 0 6px #ff78c8,2px 2px 0 var(--black);transform:translate(-50%,-50%);animation:kiss .25s ease-out forwards}
+@keyframes kiss{from{opacity:0;transform:translate(-50%,-50%) scale(.8)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+.name-wrap{margin:8px 0}h1.name{margin:0;font:24px/1.5 'Press Start 2P',monospace;letter-spacing:1px;text-align:center;text-shadow:3px 3px 0 var(--black),0 0 12px rgba(168,85,247,.35)}
+.cursor-blink{color:var(--green);animation:blink 1s steps(1) infinite}.tag{margin:0 0 22px;color:var(--text-dim);font-size:19px;letter-spacing:5px;text-transform:uppercase;text-align:center}
+.divider{width:100%;height:6px;margin-bottom:22px;opacity:.55;background-image:linear-gradient(90deg,var(--purple) 0 8px,transparent 8px 14px);background-size:14px 6px}
+.kick-live,.last-stream,.announcement{width:100%;margin-bottom:20px;padding:12px;background:rgba(28,15,54,.62);border:2px solid var(--purple);box-shadow:0 0 0 1px var(--black),0 5px 0 var(--black)}
+.kick-live{display:none;border-color:var(--green);box-shadow:0 0 0 1px var(--black),0 5px 0 var(--black),0 0 18px rgba(83,252,24,.2)}.kick-live.show{display:block}
+.kick-live-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;color:var(--green);font:11px/1.5 'Press Start 2P',monospace}
+.kick-live-badge{padding:4px 7px;color:var(--black);background:var(--green);font-size:13px;animation:blink 1s steps(1) infinite}
+.kick-live-frame{width:100%;aspect-ratio:16/9;overflow:hidden;background:#050208;border:2px solid var(--purple)}.kick-live-frame iframe{width:100%;height:100%;border:0}
+.kick-live-link{display:block;margin-top:10px;color:var(--pink);font-size:17px;text-align:center;text-decoration:none}.kick-live-link:hover{color:#fff}
+.stream-details{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.stream-info{min-width:0;padding:8px;background:rgba(5,2,8,.48);border:1px dashed rgba(240,171,252,.4)}
+.stream-label{display:block;margin-bottom:4px;color:var(--text-dim);font-size:15px}.stream-value{display:block;overflow:hidden;color:var(--pink);font-size:18px;text-overflow:ellipsis;white-space:nowrap}
+.stream-error{margin-top:9px;color:#fbbf24;font-size:16px;text-align:center}
+.last-stream-title,.announcement-title{margin-bottom:10px;color:var(--pink);font:12px/1.5 'Press Start 2P',monospace;text-align:center}
+.last-stream-content{display:grid;gap:5px;color:var(--text-dim);font-size:18px}.last-stream-content strong{color:var(--text)}.last-stream.empty{display:none}
+.notice{display:flex;gap:10px;padding:9px 4px;border-top:1px dashed rgba(216,180,254,.28);font-size:19px}.notice-date{color:var(--green);font-size:16px}
+.links{width:100%;display:flex;flex-direction:column;gap:16px}
+.btn{--button-color:var(--purple);position:relative;display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:14px 18px;color:var(--text);font:22px 'VT323',monospace;letter-spacing:1px;text-decoration:none;text-transform:uppercase;background:rgba(25,12,48,.88);border:2px solid var(--button-color);outline:2px solid var(--black);box-shadow:0 5px 0 var(--black);transition:.18s ease;cursor:pointer}
+.btn::before,.btn::after{content:"";position:absolute;width:10px;height:10px;background:var(--button-color)}.btn::before{top:-5px;left:-5px}.btn::after{right:-5px;bottom:-5px}
+.btn:hover{color:#fff;background:rgba(72,34,120,.9);transform:translateY(-4px) scale(1.015);box-shadow:0 7px 0 var(--black),0 0 18px rgba(168,85,247,.45)}.btn:active{transform:translateY(3px) scale(.98)}
+.btn-kick{--button-color:var(--green);color:#eaffe0}.support-open{--button-color:var(--pink);margin-top:22px}.icon{font-size:20px;transition:.2s}.btn:hover .icon{transform:scale(1.25) rotate(-8deg)}
+.producer{display:inline-flex;gap:8px;margin-top:15px;padding:9px 14px;color:var(--text-dim);font-size:17px;text-decoration:none;background:rgba(28,15,54,.68);border:2px solid rgba(168,85,247,.45);box-shadow:0 0 0 2px var(--black),5px 0 var(--black);transition:.2s}.producer:hover{color:#fff;border-color:var(--pink);transform:translateY(-2px)}.producer-name{color:var(--pink);font:13px 'Press Start 2P',monospace}
+.footer{width:100%;margin-top:30px;padding-top:18px;color:var(--text-dim);font-size:15px;letter-spacing:1px;text-align:center;border-top:1px dashed rgba(216,180,254,.22)}.heart{color:var(--pink);animation:beat 1.6s ease-in-out infinite}@keyframes beat{50%{transform:scale(1.15)}}
+.setup-floating{position:fixed;z-index:10;top:50%;right:18px;width:54px;height:54px;padding:0;display:grid;place-items:center;color:var(--text);font-size:24px;background:rgba(25,12,48,.94);border:2px solid #c084fc;outline:2px solid var(--black);box-shadow:0 5px 0 var(--black),0 0 16px rgba(192,132,252,.35);cursor:pointer;transition:.2s ease}
+.setup-floating:hover{color:#fff;background:rgba(72,34,120,.95);transform:translateY(-4px) scale(1.08);box-shadow:0 8px 0 var(--black),0 0 22px rgba(240,171,252,.55)}.setup-floating:active{transform:translateY(2px) scale(.96);box-shadow:0 2px 0 var(--black)}
+.setup-floating::after{content:"SETUP";position:absolute;right:62px;white-space:nowrap;padding:5px 7px;color:var(--pink);font:10px 'Press Start 2P',monospace;background:rgba(13,7,24,.95);border:1px solid var(--pink);opacity:0;pointer-events:none;transition:.2s ease}.setup-floating:hover::after{opacity:1}
+.popup-overlay{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(3,1,8,.78);backdrop-filter:blur(5px)}.popup-overlay.open{display:flex}
+.popup{width:min(420px,100%);max-height:90vh;overflow:auto;background:linear-gradient(145deg,#21113e,#0d0718);border:3px solid var(--purple);box-shadow:0 0 0 4px var(--black),0 0 35px rgba(168,85,247,.4)}
+.popup-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;color:var(--pink);font:12px 'Press Start 2P',monospace;border-bottom:2px solid rgba(240,171,252,.35)}
+.popup-close{padding:3px 7px;color:var(--green);font-size:18px;cursor:pointer;background:transparent;border:1px solid var(--green)}.popup-close:hover{color:var(--black);background:var(--green)}
+.popup-body{padding:18px}.counter-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}.counter{padding:15px 10px;text-align:center;background:rgba(5,2,8,.58);border:2px solid var(--purple);box-shadow:0 3px 0 var(--black)}.counter.kick{border-color:var(--green)}
+.counter-icon{display:block;margin-bottom:8px;font-size:25px}.counter-label{display:block;color:var(--text-dim);font-size:18px}.counter-number{display:block;margin-top:4px;color:var(--pink);font:17px 'Press Start 2P',monospace}
+.popup-title{margin:3px 0 12px;color:var(--pink);font:12px/1.6 'Press Start 2P',monospace;text-align:center}.popup-text{margin:0 0 15px;color:var(--text-dim);font-size:19px;text-align:center}
+.support-links{display:flex;flex-direction:column;gap:12px}.support-link{display:block;padding:12px;color:var(--text);font-size:21px;text-align:center;text-decoration:none;background:rgba(28,15,54,.8);border:2px solid var(--purple);box-shadow:0 4px 0 var(--black)}.support-link:hover{color:#fff;border-color:var(--pink);background:rgba(72,34,120,.85);transform:translateY(-2px)}
+.setup-list{display:grid;gap:9px;margin:0;padding:0;list-style:none}.setup-item{display:flex;justify-content:space-between;gap:12px;padding:9px;color:var(--text-dim);font-size:19px;background:rgba(5,2,8,.5);border:1px dashed rgba(240,171,252,.35)}.setup-item strong{color:var(--pink);text-align:right}
+.entry-notification{position:fixed;z-index:50;top:18px;right:18px;width:min(280px,calc(100% - 36px));padding:12px 38px 12px 14px;background:rgba(20,9,38,.96);border:2px solid var(--pink);box-shadow:0 0 0 3px var(--black),0 0 18px rgba(240,171,252,.4);animation:entryIn .5s ease}.entry-notification.hide{animation:entryOut .4s forwards}.entry-notification-title{margin-bottom:5px;color:var(--pink);font:10px 'Press Start 2P',monospace}.entry-notification-text{color:var(--text-dim);font-size:18px}.entry-notification-close{position:absolute;top:7px;right:8px;color:var(--green);cursor:pointer;background:transparent;border:1px solid var(--green)}@keyframes entryIn{from{opacity:0;transform:translateX(110%)}to{opacity:1;transform:none}}@keyframes entryOut{to{opacity:0;transform:translateX(110%)}}
+.pixel-particle{position:fixed;width:6px;height:6px;pointer-events:none;transform:translate(-50%,-50%);animation:particleFly .72s ease-out forwards}.pixel-particle.star{background:var(--pink);box-shadow:0 0 7px var(--purple)}.pixel-particle.heart{background:#ff78c8;box-shadow:0 0 7px #ff78c8}@keyframes particleFly{to{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y)))}}
+.easter-message{position:fixed;z-index:30;left:50%;top:50%;width:min(390px,calc(100% - 40px));padding:18px;color:var(--pink);font:13px/1.8 'Press Start 2P',monospace;text-align:center;background:rgba(13,7,24,.97);border:3px solid var(--pink);box-shadow:0 0 0 4px var(--black),0 0 26px rgba(240,171,252,.65);transform:translate(-50%,-50%);animation:easterIn 3s ease-in-out forwards}
+@keyframes easterIn{0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}15%,80%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(.95)}}
+@media(max-width:700px){.setup-floating{right:12px}}
+@media(max-width:420px){main{padding-top:40px}.hero{width:300px;height:360px}h1.name{font-size:19px}.stream-details{grid-template-columns:1fr}.popup-header{font-size:10px}.counter-number{font-size:13px}.setup-item{font-size:17px}.setup-floating{top:auto;right:14px;bottom:18px;width:50px;height:50px}.setup-floating::after{display:none}#mouseGlow{width:110px;height:110px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}#mouseGlow{display:none}}
 </style>
 </head>
 
-<body>
+<body class="offline-theme">
 <div id="sparkles" aria-hidden="true"></div>
 <div id="rain" aria-hidden="true"></div>
 <div id="mist" aria-hidden="true"></div>
 <div id="particles" aria-hidden="true"></div>
+<div id="mouseGlow" aria-hidden="true"></div>
+
+<button class="setup-floating" id="openSetup" type="button" aria-label="Setup ve ekipmanları aç">🖥️</button>
 
 <main>
   <div class="hero-wrap">
     <div class="hero" id="profileCard" title="Öpücük bırakmak için tıkla">
-      <span class="live-dot" id="liveStatus" data-status="offline">
-        <span class="dot"></span>
-        <span id="liveStatusText">KONTROL EDİLİYOR</span>
-      </span>
-
-      <img
-        src="https://i.ibb.co/LdpTzTrf/Ads-z-tasar-m-1.png"
-        alt="Katiya portresi, taç ve kolye takıyor"
-      >
+      <span class="live-dot" id="liveStatus"><span class="dot"></span><span id="liveStatusText">KONTROL EDİLİYOR</span></span>
+      <img draggable="false" src="https://i.ibb.co/LdpTzTrf/Ads-z-tasar-m-1.png" alt="Katiya portresi, taç ve kolye takıyor">
     </div>
   </div>
 
-  <div class="name-wrap">
-    <h1 class="name">KATIYA<span class="cursor-blink">_</span></h1>
-  </div>
-
+  <div class="name-wrap"><h1 class="name">KATIYA<span class="cursor-blink">_</span></h1></div>
   <p class="tag">Kick Yayıncısı</p>
   <div class="divider"></div>
 
-  <!-- Kick canlı yayındaysa bu alan otomatik olarak görünür -->
   <section class="kick-live" id="kickLivePanel" aria-live="polite">
-    <div class="kick-live-title">
-      <span>✦ KICK CANLI YAYIN</span>
-      <span class="kick-live-badge">CANLI</span>
+    <div class="kick-live-title"><span>✦ KICK CANLI YAYIN</span><span class="kick-live-badge">CANLI</span></div>
+    <div class="kick-live-frame"><iframe id="kickLiveFrame" title="Katiya Kick canlı yayını" allow="autoplay; fullscreen" allowfullscreen></iframe></div>
+    <div class="stream-details">
+      <div class="stream-info"><span class="stream-label">Kategori</span><strong class="stream-value" id="liveCategory">Belirleniyor...</strong></div>
+      <div class="stream-info"><span class="stream-label">Yayın başlığı</span><strong class="stream-value" id="liveTitle">Belirleniyor...</strong></div>
     </div>
-
-    <div class="kick-live-frame">
-      <iframe
-        id="kickLiveFrame"
-        title="Katiya Kick canlı yayını"
-        allow="autoplay; fullscreen"
-        allowfullscreen>
-      </iframe>
-    </div>
-
-    <a
-      class="kick-live-link"
-      href="https://kick.com/katiya"
-      target="_blank"
-      rel="noopener">
-      Kick'te yeni sekmede aç →
-    </a>
+    <div class="stream-error" id="kickError" hidden></div>
+    <a class="kick-live-link" href="https://kick.com/katiya" target="_blank" rel="noopener">Kick'te yeni sekmede aç →</a>
   </section>
 
-  <section class="announcement" aria-label="Son duyurular">
-    <div class="announcement-title">SON DUYURULAR</div>
-
-    <div class="notice">
-      <span class="notice-date">[01]</span>
-      <span>Yeni yayın programı çok yakında açıklanacak!</span>
+  <section class="last-stream empty" id="lastStream">
+    <div class="last-stream-title">✦ SON YAYIN BİLGİSİ</div>
+    <div class="last-stream-content">
+      <div>Başlık: <strong id="lastStreamTitle">-</strong></div>
+      <div>Kategori: <strong id="lastStreamCategory">-</strong></div>
+      <div>Tarih: <strong id="lastStreamDate">-</strong></div>
     </div>
+  </section>
+
+  <section class="announcement">
+    <div class="announcement-title">SON DUYURULAR</div>
+    <div class="notice"><span class="notice-date">[01]</span><span>Yeni yayın programı çok yakında açıklanacak!</span></div>
   </section>
 
   <nav class="links">
-    <a class="btn btn-kick" href="https://kick.com/katiya" target="_blank" rel="noopener">
-      <span class="icon">🎮</span>
-      Kick'te İzle
-    </a>
-
-    <a class="btn" href="https://instagram.com/katiya.live" target="_blank" rel="noopener">
-      <span class="icon">📸</span>
-      Instagram
-    </a>
-
-    <a class="btn" href="https://tiktok.com/@katiya.live" target="_blank" rel="noopener">
-      <span class="icon">🎵</span>
-      TikTok
-    </a>
-
-    <a class="btn" href="https://discord.gg/tH5nMFm3pr" target="_blank" rel="noopener">
-      <span class="icon">💬</span>
-      Discord'a Katıl
-    </a>
-
-    <button class="btn support-open" id="openPopup" type="button">
-      <span class="icon">💜</span>
-      Destek ve İstatistikler
-    </button>
+    <a class="btn btn-kick" href="https://kick.com/katiya" target="_blank" rel="noopener"><span class="icon">🎮</span>Kick'te İzle</a>
+    <a class="btn" href="https://instagram.com/katiya.live" target="_blank" rel="noopener"><span class="icon">📸</span>Instagram</a>
+    <a class="btn" href="https://tiktok.com/@katiya.live" target="_blank" rel="noopener"><span class="icon">🎵</span>TikTok</a>
+    <a class="btn" href="https://discord.gg/tH5nMFm3pr" target="_blank" rel="noopener"><span class="icon">💬</span>Discord'a Katıl</a>
+    <button class="btn support-open" id="openSupport" type="button"><span class="icon">💜</span>Destek ve İstatistikler</button>
   </nav>
 
   <footer class="footer">
     <div>yayın zamanı <span class="heart">♥</span> katiya</div>
-
-    <a class="producer" href="https://instagram.com/cesurdrnn" target="_blank" rel="noopener">
-      <span class="producer-label">Developed by</span>
-      <span class="producer-name">NieVes</span>
-    </a>
+    <a class="producer" href="https://instagram.com/cesurdrnn" target="_blank" rel="noopener"><span>Developed by</span><span class="producer-name">NieVes</span></a>
   </footer>
 </main>
 
-<div class="popup-overlay" id="popupOverlay" aria-hidden="true">
-  <section class="popup" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
-    <header class="popup-header">
-      <span id="popupTitle">KATYA // DESTEK MERKEZİ</span>
-      <button class="popup-close" id="closePopup" type="button" aria-label="Popup'ı kapat">X</button>
-    </header>
-
+<div class="popup-overlay" id="supportOverlay" aria-hidden="true">
+  <section class="popup" role="dialog" aria-modal="true">
+    <header class="popup-header"><span>KATYA // DESTEK MERKEZİ</span><button class="popup-close" data-close="supportOverlay" type="button">X</button></header>
     <div class="popup-body">
       <div class="counter-grid">
-        <div class="counter kick">
-          <span class="counter-icon">🎮</span>
-          <span class="counter-label">Kick Takipçi</span>
-          <strong class="counter-number" id="kickCount">2.3K</strong>
-        </div>
-
-        <div class="counter">
-          <span class="counter-icon">💬</span>
-          <span class="counter-label">Discord Üye</span>
-          <strong class="counter-number" id="discordCount">500</strong>
-        </div>
+        <div class="counter kick"><span class="counter-icon">🎮</span><span class="counter-label">Kick Takipçi</span><strong class="counter-number">2.3K</strong></div>
+        <div class="counter"><span class="counter-icon">💬</span><span class="counter-label">Discord Üye</span><strong class="counter-number">500</strong></div>
       </div>
-
       <h2 class="popup-title">YAYINI DESTEKLE</h2>
-
-      <p class="popup-text">
-        Katılabilir, abone olabilir veya yayıncıya bağış yapabilirsin.
-      </p>
-
+      <p class="popup-text">Katılabilir, abone olabilir veya yayıncıya bağış yapabilirsin.</p>
       <div class="support-links">
-        <a class="support-link" href="https://kick.com/katiya" target="_blank" rel="noopener">
-          🎮 Kick'e Abone Ol
-        </a>
-
-        <a class="support-link" href="https://donate.bynogame.com/katiya" target="_blank" rel="noopener">
-          💜 Bağış Yap
-        </a>
-
-        <a class="support-link" href="https://discord.gg/tH5nMFm3pr" target="_blank" rel="noopener">
-          💬 Discord'a Katıl
-        </a>
+        <a class="support-link" href="https://kick.com/katiya" target="_blank" rel="noopener">🎮 Kick'e Abone Ol</a>
+        <a class="support-link" href="https://donate.bynogame.com/katiya" target="_blank" rel="noopener">💜 Bağış Yap</a>
+        <a class="support-link" href="https://discord.gg/tH5nMFm3pr" target="_blank" rel="noopener">💬 Discord'a Katıl</a>
       </div>
     </div>
   </section>
 </div>
 
+<div class="popup-overlay" id="setupOverlay" aria-hidden="true">
+  <section class="popup" role="dialog" aria-modal="true">
+    <header class="popup-header"><span>KATYA // SETUP</span><button class="popup-close" data-close="setupOverlay" type="button">X</button></header>
+    <div class="popup-body">
+      <h2 class="popup-title">KULLANILAN EKİPMANLAR</h2>
+      <ul class="setup-list">
+        <li class="setup-item"><span>🎙️ Mikrofon</span><strong>Fifine Ampligame A6TW</strong></li>
+        <li class="setup-item"><span>📷 Kamera</span><strong>Webcam</strong></li>
+        <li class="setup-item"><span>🎧 Kulaklık</span><strong>Gaming Kulaklık</strong></li>
+        <li class="setup-item"><span>🖥️ Monitör</span><strong>Gaming Monitör</strong></li>
+        <li class="setup-item"><span>⌨️ Klavye</span><strong>Mekanik Klavye</strong></li>
+        <li class="setup-item"><span>🖱️ Mouse</span><strong>Gaming Mouse</strong></li>
+      </ul>
+    </div>
+  </section>
+</div>
+
 <script>
+const body=document.body;
+const status=document.getElementById('liveStatus');
+const statusText=document.getElementById('liveStatusText');
+const panel=document.getElementById('kickLivePanel');
+const frame=document.getElementById('kickLiveFrame');
+const errorMessage=document.getElementById('kickError');
+const category=document.getElementById('liveCategory');
+const title=document.getElementById('liveTitle');
+const lastStream=document.getElementById('lastStream');
+const lastTitle=document.getElementById('lastStreamTitle');
+const lastCategory=document.getElementById('lastStreamCategory');
+const lastDate=document.getElementById('lastStreamDate');
+const mouseGlow=document.getElementById('mouseGlow');
 let audioContext;
 
-function playPixelSound(type = 'hover') {
-  try {
-    audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
-
-    if (audioContext.state === 'suspended') {
-      audioContext.resume();
-    }
-
-    const oscillator = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-
-    const settings = {
-      hover:{frequency:520,duration:.055,volume:.025},
-      click:{frequency:180,duration:.12,volume:.06},
-      egg:{frequency:760,duration:.22,volume:.08}
-    }[type];
-
-    oscillator.type = 'square';
-    oscillator.frequency.setValueAtTime(settings.frequency, audioContext.currentTime);
-
-    if (type === 'egg') {
-      oscillator.frequency.exponentialRampToValueAtTime(
-        1180,
-        audioContext.currentTime + settings.duration
-      );
-    }
-
-    gain.gain.setValueAtTime(settings.volume, audioContext.currentTime);
-    gain.gain.exponentialRampToValueAtTime(
-      .001,
-      audioContext.currentTime + settings.duration
-    );
-
-    oscillator.connect(gain);
-    gain.connect(audioContext.destination);
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + settings.duration);
-  } catch (error) {}
-}
-
-document.querySelectorAll('.btn,.producer,.support-link').forEach((element) => {
-  element.addEventListener('mouseenter', () => playPixelSound('hover'));
-  element.addEventListener('click', () => playPixelSound('click'));
+document.addEventListener('selectstart',event=>event.preventDefault());
+document.addEventListener('contextmenu',event=>{
+  if(event.target.tagName==='IMG')event.preventDefault();
 });
 
-const entryNotifications = [
-  'Hoş geldin! Katiya henüz kahvesini içmedi ama yayın modunda.',
-  'Bildirim geldi: Buraya kadar geldiysen artık ekiptesin.',
-  'Sistem kontrolü tamamlandı. Katiya hâlâ çok havalı.',
-  'Uyarı: Bu siteye giren herkesin müzik zevki güzelleşiyor.',
-  'Katiya evrenine hoş geldin. Çıkış kapısı henüz yapılmadı.',
-  'Bugünün görevi: Yayını aç, eğlen, gereksiz ciddiyeti kapat.'
-];
+function playPixelSound(type='hover'){
+  try{
+    audioContext ||= new(window.AudioContext||window.webkitAudioContext)();
+    if(audioContext.state==='suspended')audioContext.resume();
+    const oscillator=audioContext.createOscillator(),gain=audioContext.createGain();
+    const sound={hover:[520,.055,.025],click:[180,.12,.06],egg:[760,.22,.08]}[type];
+    oscillator.type='square';oscillator.frequency.value=sound[0];gain.gain.value=sound[2];
+    gain.gain.exponentialRampToValueAtTime(.001,audioContext.currentTime+sound[1]);
+    oscillator.connect(gain);gain.connect(audioContext.destination);oscillator.start();
+    oscillator.stop(audioContext.currentTime+sound[1]);
+  }catch(error){}
+}
+function updateTheme(state){body.classList.remove('live-theme','offline-theme','error-theme');body.classList.add(state==='live'?'live-theme':state==='error'?'error-theme':'offline-theme')}
+function updateStatus(state){status.classList.toggle('offline',state==='offline');status.classList.toggle('error',state==='error');statusText.textContent={live:'CANLI',offline:'OFFLINE',error:'API HATASI'}[state];updateTheme(state)}
+function getCategory(data){return data?.category?.name||data?.category?.slug||data?.categories?.[0]?.name||'Kategori bilgisi yok'}
+function getTitle(data){return data?.session_title||data?.title||data?.stream_title||'Başlık bilgisi yok'}
+function getDate(data){const value=data?.created_at||data?.start_time||data?.started_at;return value?new Date(value).toLocaleString('tr-TR'):'Tarih bilgisi yok'}
+function showLastStream(data){if(!data)return;lastTitle.textContent=getTitle(data);lastCategory.textContent=data.category||getCategory(data);lastDate.textContent=getDate(data);lastStream.classList.remove('empty')}
 
-function showEntryNotification() {
-  const notification = document.createElement('aside');
-  const message = entryNotifications[
-    Math.floor(Math.random() * entryNotifications.length)
-  ];
-
-  notification.className = 'entry-notification';
-  notification.setAttribute('role', 'status');
-  notification.innerHTML = `
-    <button class="entry-notification-close" type="button" aria-label="Bildirimi kapat">X</button>
-    <div class="entry-notification-title">✦ KATYA BİLDİRİMİ</div>
-    <div class="entry-notification-text">${message}</div>
-  `;
-
-  document.body.appendChild(notification);
-
-  const closeNotification = () => {
-    if (notification.classList.contains('hide')) return;
-    notification.classList.add('hide');
-    setTimeout(() => notification.remove(), 450);
-  };
-
-  notification.querySelector('.entry-notification-close')
-    .addEventListener('click', closeNotification);
-
-  setTimeout(closeNotification, 6500);
+async function checkKickLiveStatus(){
+  errorMessage.hidden=true;
+  try{
+    const response=await fetch('https://kick.com/api/v2/channels/katiya',{headers:{Accept:'application/json'},cache:'no-store'});
+    if(!response.ok)throw new Error('HTTP '+response.status);
+    const channel=await response.json(),stream=channel.livestream,isLive=Boolean(stream);
+    updateStatus(isLive?'live':'offline');
+    if(isLive){
+      frame.src=`https://player.kick.com/katiya?autoplay=true&muted=true&parent=${encodeURIComponent(location.hostname||'localhost')}`;
+      panel.classList.add('show');category.textContent=getCategory(stream);title.textContent=getTitle(stream);
+      localStorage.setItem('katyaLastStream',JSON.stringify({title:getTitle(stream),category:getCategory(stream),created_at:stream.created_at||stream.start_time}));
+    }else{
+      panel.classList.remove('show');frame.removeAttribute('src');category.textContent='Yayın aktif değil';title.textContent='Şu anda canlı yayın yok';
+      const saved=localStorage.getItem('katyaLastStream');
+      if(saved)showLastStream(JSON.parse(saved));else if(channel.last_stream)showLastStream(channel.last_stream);
+    }
+  }catch(error){
+    updateStatus('error');panel.classList.remove('show');frame.removeAttribute('src');errorMessage.hidden=false;
+    errorMessage.textContent='⚠ Kick API’ye ulaşılamadı. İnternet bağlantısını veya API erişimini kontrol edin.';
+    console.warn('Kick API kontrolü başarısız:',error);
+  }
 }
 
-showEntryNotification();
+function openPopup(id){const popup=document.getElementById(id);popup.classList.add('open');popup.setAttribute('aria-hidden','false');body.classList.add('modal-active');playPixelSound('click')}
+function closePopup(id){const popup=document.getElementById(id);popup.classList.remove('open');popup.setAttribute('aria-hidden','true');if(!document.querySelector('.popup-overlay.open'))body.classList.remove('modal-active')}
+document.getElementById('openSetup').onclick=()=>openPopup('setupOverlay');
+document.getElementById('openSupport').onclick=()=>openPopup('supportOverlay');
+document.querySelectorAll('[data-close]').forEach(button=>button.onclick=()=>closePopup(button.dataset.close));
+document.querySelectorAll('.popup-overlay').forEach(overlay=>overlay.onclick=event=>{if(event.target===overlay)closePopup(overlay.id)});
+document.addEventListener('keydown',event=>{if(event.key==='Escape')document.querySelectorAll('.popup-overlay.open').forEach(popup=>closePopup(popup.id))});
 
-const profileCard = document.getElementById('profileCard');
-let cardFrame = 0;
-let lastMouseX = 0;
-let lastMouseY = 0;
+document.querySelectorAll('.btn,.producer,.support-link,.kick-live-link,.setup-floating').forEach(element=>{
+  element.addEventListener('mouseenter',()=>playPixelSound('hover'));
+  element.addEventListener('click',event=>{playPixelSound('click');for(let i=0;i<5;i++)createParticle(event.clientX,event.clientY,i%2?'heart':'star')});
+});
 
-document.addEventListener('mousemove', (event) => {
-  lastMouseX = event.clientX;
-  lastMouseY = event.clientY;
+const profileCard=document.getElementById('profileCard');
+profileCard.onclick=event=>{
+  const kiss=document.createElement('span');kiss.className='click-kiss';kiss.textContent='💋';kiss.style.left=event.pageX+'px';kiss.style.top=event.pageY+'px';document.body.appendChild(kiss);
+  for(let i=0;i<10;i++)createParticle(event.clientX,event.clientY,i%3?'heart':'star');
+  setTimeout(()=>kiss.remove(),1000);
+};
 
-  if (cardFrame) return;
-
-  cardFrame = requestAnimationFrame(() => {
-    const rect = profileCard.getBoundingClientRect();
-    const inside =
-      lastMouseX >= rect.left &&
-      lastMouseX <= rect.right &&
-      lastMouseY >= rect.top &&
-      lastMouseY <= rect.bottom;
-
-    if (inside) {
-      const x = (lastMouseX - rect.left) / rect.width - .5;
-      const y = (lastMouseY - rect.top) / rect.height - .5;
-
-      profileCard.style.transform =
-        `rotateY(${x * 8}deg) rotateX(${y * -8}deg)`;
-    } else {
-      profileCard.style.transform = 'rotateY(0deg) rotateX(0deg)';
-    }
-
-    cardFrame = 0;
+let animationFrame=0,mouseX=0,mouseY=0,lastTrail=0;
+document.addEventListener('mousemove',event=>{
+  mouseX=event.clientX;mouseY=event.clientY;mouseGlow.style.left=mouseX+'px';mouseGlow.style.top=mouseY+'px';mouseGlow.style.opacity='1';
+  if(performance.now()-lastTrail>32){createParticle(mouseX,mouseY,Math.random()>.45?'heart':'star');lastTrail=performance.now()}
+  if(animationFrame)return;
+  animationFrame=requestAnimationFrame(()=>{
+    const rect=profileCard.getBoundingClientRect(),inside=mouseX>=rect.left&&mouseX<=rect.right&&mouseY>=rect.top&&mouseY<=rect.bottom;
+    profileCard.style.transform=inside?`rotateY(${((mouseX-rect.left)/rect.width-.5)*16}deg) rotateX(${((mouseY-rect.top)/rect.height-.5)*-16}deg) scale(1.035)`:'rotateY(0deg) rotateX(0deg) scale(1)';
+    animationFrame=0;
   });
 });
+document.addEventListener('mouseleave',()=>{mouseGlow.style.opacity='0';profileCard.style.transform='rotateY(0deg) rotateX(0deg) scale(1)'});
 
-profileCard.addEventListener('click', (event) => {
-  const kiss = document.createElement('span');
+const sparkles=document.getElementById('sparkles'),rain=document.getElementById('rain');
+for(let i=0;i<24;i++){const sparkle=document.createElement('div');sparkle.className='sparkle';sparkle.style.left=Math.random()*100+'vw';sparkle.style.animationDuration=6+Math.random()*5+'s';sparkle.style.animationDelay=-Math.random()*8+'s';sparkles.appendChild(sparkle)}
+for(let i=0;i<24;i++){const drop=document.createElement('div');drop.className='drop';drop.style.left=Math.random()*100+'vw';drop.style.animationDuration=3.8+Math.random()*3.8+'s';drop.style.animationDelay=-Math.random()*9+'s';rain.appendChild(drop)}
+const mist=document.getElementById('mist');
+['one','two'].forEach(name=>{const cloud=document.createElement('div');cloud.className='mist '+name;mist.appendChild(cloud)});
+const particles=document.getElementById('particles');
 
-  kiss.className = 'click-kiss';
-  kiss.textContent = '💋';
-  kiss.style.left = `${event.pageX}px`;
-  kiss.style.top = `${event.pageY}px`;
-
-  document.body.appendChild(kiss);
-  playPixelSound('click');
-
-  setTimeout(() => kiss.remove(), 1000);
-});
-
-const sparkles = document.getElementById('sparkles');
-
-for (let i = 0; i < 24; i++) {
-  const sparkle = document.createElement('div');
-  sparkle.className = 'sparkle';
-  sparkle.style.left = `${Math.random() * 100}vw`;
-  sparkle.style.animationDuration = `${6 + Math.random() * 5}s`;
-  sparkle.style.animationDelay = `${-Math.random() * 8}s`;
-  sparkles.appendChild(sparkle);
+function createParticle(x,y,type){
+  if(particles.childElementCount>=45)particles.firstElementChild.remove();
+  const particle=document.createElement('span');particle.className='pixel-particle '+type;particle.style.left=x+'px';particle.style.top=y+'px';
+  particle.style.setProperty('--x',Math.random()*70-35+'px');particle.style.setProperty('--y',Math.random()*55-45+'px');particles.appendChild(particle);
+  setTimeout(()=>particle.remove(),760);
 }
 
-const rain = document.getElementById('rain');
-
-for (let i = 0; i < 24; i++) {
-  const drop = document.createElement('div');
-  drop.className = 'drop';
-  drop.style.left = `${Math.random() * 100}vw`;
-  drop.style.height = `${16 + Math.random() * 20}px`;
-  drop.style.animationDuration = `${3.8 + Math.random() * 3.8}s`;
-  drop.style.animationDelay = `${-Math.random() * 9}s`;
-  rain.appendChild(drop);
+const messages=['Hoş geldin! Katiya henüz kahvesini içmedi ama yayın modunda.','Bildirim geldi: Buraya kadar geldiysen artık ekiptesin.','Sistem kontrolü tamamlandı. Katiya hâlâ çok havalı.','Katiya evrenine hoş geldin.'];
+function showEntryNotification(){
+  const notification=document.createElement('aside');notification.className='entry-notification';
+  notification.innerHTML=`<button class="entry-notification-close" type="button">X</button><div class="entry-notification-title">✦ KATYA BİLDİRİMİ</div><div class="entry-notification-text">${messages[Math.floor(Math.random()*messages.length)]}</div>`;
+  document.body.appendChild(notification);
+  const close=()=>{notification.classList.add('hide');setTimeout(()=>notification.remove(),450)};
+  notification.querySelector('button').onclick=close;setTimeout(close,6500);
 }
+showEntryNotification();
 
-const mist = document.getElementById('mist');
-
-['one','two'].forEach((className) => {
-  const cloud = document.createElement('div');
-  cloud.className = `mist ${className}`;
-  mist.appendChild(cloud);
-});
-
-const particles = document.getElementById('particles');
-const maxParticles = 18;
-
-function createParticle(x, y, type) {
-  if (particles.childElementCount >= maxParticles) {
-    particles.firstElementChild.remove();
-  }
-
-  const particle = document.createElement('span');
-
-  particle.className = `pixel-particle ${type || (
-    Math.random() > .35 ? 'star' : 'heart'
-  )}`;
-
-  particle.style.left = `${x}px`;
-  particle.style.top = `${y}px`;
-  particle.style.setProperty('--x', `${Math.random() * 70 - 35}px`);
-  particle.style.setProperty('--y', `${Math.random() * 55 - 45}px`);
-
-  particles.appendChild(particle);
-  setTimeout(() => particle.remove(), 760);
-}
-
-const popupOverlay = document.getElementById('popupOverlay');
-const openPopup = document.getElementById('openPopup');
-const closePopup = document.getElementById('closePopup');
-
-function showPopup() {
-  popupOverlay.classList.add('open');
-  popupOverlay.setAttribute('aria-hidden', 'false');
-  document.body.classList.add('modal-active');
-  playPixelSound('click');
-}
-
-function hidePopup(event) {
-  if (event) {
-    event.preventDefault();
-    event.stopPropagation();
-  }
-
-  popupOverlay.classList.remove('open');
-  popupOverlay.setAttribute('aria-hidden', 'true');
-  document.body.classList.remove('modal-active');
-}
-
-openPopup.addEventListener('click', showPopup);
-closePopup.addEventListener('click', hidePopup);
-
-popupOverlay.addEventListener('click', (event) => {
-  if (event.target === popupOverlay) hidePopup(event);
-});
-
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape') hidePopup();
-});
-
-/* Kick canlı yayın kontrolü */
-const liveStatus = document.getElementById('liveStatus');
-const liveStatusText = document.getElementById('liveStatusText');
-const kickLivePanel = document.getElementById('kickLivePanel');
-const kickLiveFrame = document.getElementById('kickLiveFrame');
-
-const kickChannel = 'katiya';
-
-function updateLiveStatus(isLive) {
-  liveStatus.classList.toggle('offline', !isLive);
-  liveStatus.dataset.status = isLive ? 'live' : 'offline';
-  liveStatusText.textContent = isLive ? 'CANLI' : 'OFFLINE';
-}
-
-function showKickLivePlayer() {
-  const parent = window.location.hostname || 'localhost';
-
-  kickLiveFrame.src =
-    `https://player.kick.com/${kickChannel}?autoplay=true&muted=true&parent=${encodeURIComponent(parent)}`;
-
-  kickLivePanel.classList.add('show');
-}
-
-function hideKickLivePlayer() {
-  kickLivePanel.classList.remove('show');
-  kickLiveFrame.removeAttribute('src');
-}
-
-async function checkKickLiveStatus() {
-  try {
-    const response = await fetch(
-      `https://kick.com/api/v2/channels/${kickChannel}`,
-      {
-        method:'GET',
-        headers:{'Accept':'application/json'},
-        cache:'no-store'
-      }
-    );
-
-    if (!response.ok) throw new Error('Kick API yanıt vermedi');
-
-    const channel = await response.json();
-    const isLive = Boolean(channel.livestream);
-
-    updateLiveStatus(isLive);
-
-    if (isLive) {
-      showKickLivePlayer();
-    } else {
-      hideKickLivePlayer();
-    }
-  } catch (error) {
-    updateLiveStatus(false);
-    hideKickLivePlayer();
-    console.warn('Kick canlı yayın durumu kontrol edilemedi:', error);
-  }
-}
-
-checkKickLiveStatus();
-setInterval(checkKickLiveStatus, 60000);
-
-let secretInput = '';
-const secretWord = 'KATIYA';
-let easterModeActive = false;
-
-document.addEventListener('keydown', (event) => {
-  if (event.key.length !== 1) return;
-
-  secretInput += event.key.toUpperCase();
-  secretInput = secretInput.slice(-secretWord.length);
-
-  if (secretInput === secretWord) {
-    triggerEasterEgg();
-    secretInput = '';
+let input='',easterMode=false;
+document.addEventListener('keydown',event=>{
+  if(event.key.length!==1)return;
+  input+=(event.key||'').toUpperCase();input=input.slice(-6);
+  if(input==='KATIYA'){
+    easterMode=!easterMode;body.classList.toggle('easter-mode',easterMode);playPixelSound('egg');
+    const message=document.createElement('div');message.className='easter-message';
+    message.innerHTML=easterMode?'✦ KATIYA MODE AKTİF ✦<br><small>SECRET PIXEL POWER</small>':'✦ KATIYA MODE KAPANDI ✦';
+    document.body.appendChild(message);setTimeout(()=>message.remove(),3000);input='';
   }
 });
-
-function triggerEasterEgg() {
-  easterModeActive = !easterModeActive;
-  document.body.classList.toggle('easter-mode', easterModeActive);
-  playPixelSound('egg');
-
-  const message = document.createElement('div');
-  message.className = 'easter-message';
-  message.innerHTML = easterModeActive
-    ? '✦ KATIYA MODE AKTİF ✦<br><small>SECRET PIXEL POWER</small>'
-    : '✦ KATIYA MODE KAPANDI ✦';
-
-  document.body.appendChild(message);
-
-  for (let i = 0; i < 24; i++) {
-    createParticle(
-      window.innerWidth / 2 + Math.random() * 100 - 50,
-      window.innerHeight / 2 + Math.random() * 60 - 30,
-      i % 3 === 0 ? 'heart' : 'star'
-    );
-  }
-
-  setTimeout(() => message.remove(), 3000);
-}
+try{const saved=localStorage.getItem('katyaLastStream');if(saved)showLastStream(JSON.parse(saved))}catch(error){}
+checkKickLiveStatus();setInterval(checkKickLiveStatus,60000);
 </script>
 </body>
 </html>
