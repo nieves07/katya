@@ -74,9 +74,7 @@ effectStyle.textContent = `
     color: var(--effect-color);
     font-family: monospace;
     font-size: var(--effect-size);
-    text-shadow:
-      0 0 5px var(--effect-glow),
-      0 0 14px var(--effect-glow);
+    text-shadow: 0 0 5px var(--effect-glow), 0 0 14px var(--effect-glow);
     animation: themeParticleFall var(--effect-speed) linear forwards;
   }
 
@@ -155,8 +153,53 @@ effectStyle.textContent = `
   }
 
   @keyframes cyberGrid {
-    from { background-position: 0 0,0 0; }
-    to { background-position: 42px 42px,-42px 42px; }
+    from {
+      background-position: 0 0,0 0;
+    }
+    to {
+      background-position: 42px 42px,-42px 42px;
+    }
+  }
+
+  /* Gelişmiş Kick bilgileri */
+  .advanced-stream-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .advanced-stream-info {
+    min-width: 0;
+    padding: 8px;
+    background: rgba(5,2,8,.48);
+    border: 1px dashed rgba(240,171,252,.4);
+  }
+
+  .advanced-stream-label {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--text-dim);
+    font-size: 15px;
+  }
+
+  .advanced-stream-value {
+    display: block;
+    overflow: hidden;
+    color: var(--pink);
+    font-size: 18px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .advanced-stream-value.live-viewers {
+    color: var(--green);
+  }
+
+  @media(max-width:420px) {
+    .advanced-stream-details {
+      grid-template-columns: 1fr;
+    }
   }
 `;
 
@@ -176,6 +219,7 @@ function getActiveEffect() {
   if (document.body.classList.contains('theme-halloween')) return themeEffects.halloween;
   if (document.body.classList.contains('theme-ice')) return themeEffects.ice;
   if (document.body.classList.contains('theme-red')) return themeEffects.red;
+
   return themeEffects.offline;
 }
 
@@ -211,6 +255,7 @@ function createThemeParticle() {
 
 function refreshThemeEffect() {
   const effect = getActiveEffect();
+
   document.body.style.background = effect.background;
 
   clearInterval(effectTimer);
@@ -231,3 +276,199 @@ themeObserver.observe(document.body, {
 });
 
 refreshThemeEffect();
+
+/* Gelişmiş Kick bilgileri */
+
+let advancedKickTimer;
+
+function createAdvancedKickPanel() {
+  const streamDetails = document.querySelector('.stream-details');
+
+  if (!streamDetails || document.querySelector('.advanced-stream-details')) {
+    return;
+  }
+
+  const panel = document.createElement('div');
+  panel.className = 'advanced-stream-details';
+  panel.innerHTML = `
+    <div class="advanced-stream-info">
+      <span class="advanced-stream-label">İzleyici</span>
+      <strong class="advanced-stream-value live-viewers" id="advancedViewerCount">-</strong>
+    </div>
+    <div class="advanced-stream-info">
+      <span class="advanced-stream-label">Takipçi</span>
+      <strong class="advanced-stream-value" id="advancedFollowerCount">-</strong>
+    </div>
+    <div class="advanced-stream-info">
+      <span class="advanced-stream-label">Yayın süresi</span>
+      <strong class="advanced-stream-value" id="advancedStreamDuration">-</strong>
+    </div>
+    <div class="advanced-stream-info">
+      <span class="advanced-stream-label">Başlangıç</span>
+      <strong class="advanced-stream-value" id="advancedStreamStart">-</strong>
+    </div>
+  `;
+
+  streamDetails.insertAdjacentElement('afterend', panel);
+}
+
+function getNumber(...values) {
+  for (const value of values) {
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return value;
+    }
+
+    if (typeof value === 'string' && value.trim() !== '') {
+      const number = Number(value.replace(/[^\d.-]/g, ''));
+
+      if (Number.isFinite(number)) {
+        return number;
+      }
+    }
+  }
+
+  return null;
+}
+
+function formatNumber(value) {
+  const number = getNumber(value);
+
+  if (number === null) {
+    return '-';
+  }
+
+  return new Intl.NumberFormat('tr-TR').format(number);
+}
+
+function getViewerCount(stream) {
+  return getNumber(
+    stream?.viewer_count,
+    stream?.viewers_count,
+    stream?.concurrent_viewers,
+    stream?.viewers,
+    stream?.viewerCount
+  );
+}
+
+function getFollowerCount(channel) {
+  return getNumber(
+    channel?.followers_count,
+    channel?.followersCount,
+    channel?.followers?.count,
+    channel?.followers?.total,
+    channel?.user?.followers_count
+  );
+}
+
+function getStartDate(stream) {
+  const value =
+    stream?.started_at ||
+    stream?.start_time ||
+    stream?.created_at ||
+    stream?.startTime;
+
+  if (!value) {
+    return null;
+  }
+
+  const date = new Date(value);
+
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function formatStartDate(date) {
+  if (!date) {
+    return '-';
+  }
+
+  return date.toLocaleTimeString('tr-TR', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+function formatDuration(date) {
+  if (!date) {
+    return '-';
+  }
+
+  const elapsed = Math.max(0, Date.now() - date.getTime());
+  const totalMinutes = Math.floor(elapsed / 60000);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  if (hours > 0) {
+    return `${hours}s ${String(minutes).padStart(2, '0')}dk`;
+  }
+
+  return `${minutes}dk`;
+}
+
+function updateAdvancedKickInfo(channel) {
+  createAdvancedKickPanel();
+
+  const viewerElement = document.getElementById('advancedViewerCount');
+  const followerElement = document.getElementById('advancedFollowerCount');
+  const durationElement = document.getElementById('advancedStreamDuration');
+  const startElement = document.getElementById('advancedStreamStart');
+
+  if (!viewerElement || !followerElement || !durationElement || !startElement) {
+    return;
+  }
+
+  const stream = channel?.livestream;
+  const isLive = Boolean(stream);
+
+  if (!isLive) {
+    viewerElement.textContent = '-';
+    durationElement.textContent = '-';
+    startElement.textContent = '-';
+    followerElement.textContent = formatNumber(getFollowerCount(channel));
+    return;
+  }
+
+  const startDate = getStartDate(stream);
+
+  viewerElement.textContent = formatNumber(getViewerCount(stream));
+  followerElement.textContent = formatNumber(getFollowerCount(channel));
+  durationElement.textContent = formatDuration(startDate);
+  startElement.textContent = formatStartDate(startDate);
+}
+
+async function refreshAdvancedKickInfo() {
+  try {
+    const response = await fetch('https://kick.com/api/v2/channels/katiya', {
+      headers: {
+        Accept: 'application/json'
+      },
+      cache: 'no-store'
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const channel = await response.json();
+    updateAdvancedKickInfo(channel);
+  } catch (error) {
+    createAdvancedKickPanel();
+
+    const viewerElement = document.getElementById('advancedViewerCount');
+
+    if (viewerElement) {
+      viewerElement.textContent = '-';
+    }
+
+    console.warn('Gelişmiş Kick bilgileri alınamadı:', error);
+  }
+}
+
+function startAdvancedKickInfo() {
+  createAdvancedKickPanel();
+  refreshAdvancedKickInfo();
+
+  clearInterval(advancedKickTimer);
+  advancedKickTimer = setInterval(refreshAdvancedKickInfo, 30000);
+}
+
+startAdvancedKickInfo();
