@@ -474,11 +474,6 @@ async function checkKickLiveStatus(){
       category.textContent=getCategory(stream);
       title.textContent=getTitle(stream);
 
-      localStorage.setItem('katyaLastStream',JSON.stringify({
-        title:getTitle(stream),
-        category:getCategory(stream),
-        created_at:stream.created_at||stream.start_time
-      }));
     }else{
       panel.classList.remove('show');
       frame.removeAttribute('src');
@@ -683,11 +678,6 @@ document.addEventListener('keydown',event=>{
     input='';
   }
 });
-
-try{
-  const saved=localStorage.getItem('katyaLastStream');
-  if(saved)showLastStream(JSON.parse(saved));
-}catch(error){}
 
 checkKickLiveStatus();
 setInterval(checkKickLiveStatus,60000);
