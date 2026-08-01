@@ -12,6 +12,7 @@
       box-shadow: 0 5px 0 var(--black), 0 0 16px rgba(240, 171, 252, .35);
     }
 
+
     .katya-character-floating::after {
       content: "KATYA";
       color: var(--pink);
