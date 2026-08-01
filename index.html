@@ -366,18 +366,7 @@ document.addEventListener('contextmenu',event=>{
   if(event.target.tagName==='IMG')event.preventDefault();
 });
 
-function playPixelSound(type='hover'){
-  try{
-    audioContext ||= new(window.AudioContext||window.webkitAudioContext)();
-    if(audioContext.state==='suspended')audioContext.resume();
-    const oscillator=audioContext.createOscillator(),gain=audioContext.createGain();
-    const sound={hover:[520,.055,.025],click:[180,.12,.06],egg:[760,.22,.08]}[type];
-    oscillator.type='square';oscillator.frequency.value=sound[0];gain.gain.value=sound[2];
-    gain.gain.exponentialRampToValueAtTime(.001,audioContext.currentTime+sound[1]);
-    oscillator.connect(gain);gain.connect(audioContext.destination);oscillator.start();
-    oscillator.stop(audioContext.currentTime+sound[1]);
-  }catch(error){}
-}
+
 
 function updateTheme(state){
   body.classList.remove('live-theme','offline-theme','error-theme');
@@ -503,7 +492,6 @@ function openPopup(id){
   popup.classList.add('open');
   popup.setAttribute('aria-hidden','false');
   body.classList.add('modal-active');
-  playPixelSound('click');
 }
 
 function closePopup(id){
@@ -526,10 +514,10 @@ document.addEventListener('keydown',event=>{
 });
 
 document.querySelectorAll('.btn,.producer,.support-link,.kick-live-link,.setup-floating').forEach(element=>{
-  element.addEventListener('mouseenter',()=>playPixelSound('hover'));
   element.addEventListener('click',event=>{
-    playPixelSound('click');
-    for(let i=0;i<5;i++)createParticle(event.clientX,event.clientY,i%2?'heart':'star');
+    for(let i=0;i<5;i++) {
+      createParticle(event.clientX,event.clientY,i%2?'heart':'star');
+    }
   });
 });
 
@@ -660,7 +648,7 @@ document.addEventListener('keydown',event=>{
   if(input==='KATIYA'){
     easterMode=!easterMode;
     body.classList.toggle('easter-mode',easterMode);
-    playPixelSound('egg');
+
 
     const message=document.createElement('div');
     message.className='easter-message';
@@ -711,7 +699,7 @@ function applyTheme(index,showMessage=true){
 
   if(showMessage){
     showThemeNotification(selectedTheme.name);
-    playPixelSound('click');
+   
   }
 }
 
