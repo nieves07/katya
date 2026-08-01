@@ -12,7 +12,6 @@
       box-shadow: 0 5px 0 var(--black), 0 0 16px rgba(240, 171, 252, .35);
     }
 
-
     .katya-character-floating::after {
       content: "KATYA";
       color: var(--pink);
@@ -33,17 +32,19 @@
       border-bottom-color: rgba(240, 171, 252, .35);
     }
 
-    .katya-character-overlay .character-image-placeholder {
+    .katya-character-overlay .character-body {
+      width: 100%;
+      padding: 18px;
+    }
+
+    .katya-character-overlay .character-image {
+      display: block;
       width: min(100%, 340px);
       height: 230px;
       margin: 0 auto 18px;
-      display: grid;
-      place-items: center;
-      color: var(--pink);
-      font: 11px 'Press Start 2P', monospace;
-      text-align: center;
-      background: rgba(5, 2, 8, .58);
-      border: 2px dashed var(--pink);
+      object-fit: cover;
+      object-position: center;
+      border: 2px solid var(--pink);
       box-shadow: 0 4px 0 var(--black), 0 0 18px rgba(240, 171, 252, .25);
     }
 
@@ -64,7 +65,8 @@
         height: 50px;
       }
 
-      .katya-character-overlay .character-image-placeholder {
+      .katya-character-overlay .character-image {
+        width: 100%;
         height: 190px;
       }
     }
@@ -92,9 +94,12 @@
       </header>
 
       <div class="character-body">
-        <div class="character-image-placeholder">
-          GÖRSEL EKLENECEK
-        </div>
+        <img
+          class="character-image"
+          src="https://i.ibb.co/M5WT42tY/argde.png"
+          alt="Katya Lenz karakter görseli"
+          draggable="false"
+        >
 
         <h2 class="character-name" id="katyaCharacterTitle">KATYA LENZ</h2>
 
