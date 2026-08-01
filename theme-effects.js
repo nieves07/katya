@@ -114,9 +114,195 @@ effectStyle.textContent = `
     color: var(--green);
   }
 
-  @media(max-width:420px) {
+  /* Karakter butonu */
+  .character-floating {
+    position: fixed;
+    z-index: 10;
+    top: calc(50% + 144px);
+    right: 18px;
+    width: 54px;
+    height: 54px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    color: var(--text);
+    font-size: 24px;
+    background: rgba(25, 12, 48, .94);
+    border: 2px solid var(--green);
+    outline: 2px solid var(--black);
+    box-shadow: 0 5px 0 var(--black), 0 0 16px rgba(83, 252, 24, .35);
+    cursor: pointer;
+    transition: .2s ease;
+  }
+
+  .character-floating:hover {
+    color: #fff;
+    background: rgba(72, 34, 120, .95);
+    transform: translateY(-4px) scale(1.08);
+    box-shadow: 0 8px 0 var(--black), 0 0 22px rgba(83, 252, 24, .55);
+  }
+
+  .character-floating:active {
+    transform: translateY(2px) scale(.96);
+    box-shadow: 0 2px 0 var(--black);
+  }
+
+  .character-floating::after {
+    content: "KARAKTER";
+    position: absolute;
+    right: 62px;
+    white-space: nowrap;
+    padding: 5px 7px;
+    color: var(--green);
+    font: 10px 'Press Start 2P', monospace;
+    background: rgba(13, 7, 24, .95);
+    border: 1px solid var(--green);
+    opacity: 0;
+    pointer-events: none;
+    transition: .2s ease;
+  }
+
+  .character-floating:hover::after {
+    opacity: 1;
+  }
+
+  .character-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(3, 1, 8, .78);
+    backdrop-filter: blur(5px);
+  }
+
+  .character-overlay.open {
+    display: flex;
+  }
+
+  .character-popup {
+    width: min(620px, 100%);
+    max-height: 90vh;
+    overflow: auto;
+    background: linear-gradient(145deg, #21113e, #0d0718);
+    border: 3px solid var(--green);
+    box-shadow: 0 0 0 4px var(--black), 0 0 35px rgba(83, 252, 24, .35);
+  }
+
+  .character-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 13px 15px;
+    color: var(--green);
+    font: 12px 'Press Start 2P', monospace;
+    border-bottom: 2px solid rgba(83, 252, 24, .35);
+  }
+
+  .character-close {
+    padding: 3px 7px;
+    color: var(--pink);
+    font-size: 18px;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid var(--pink);
+  }
+
+  .character-close:hover {
+    color: var(--black);
+    background: var(--pink);
+  }
+
+  .character-body {
+    padding: 18px;
+  }
+
+  .character-image {
+    display: block;
+    width: min(100%, 340px);
+    height: 230px;
+    margin: 0 auto 18px;
+    object-fit: cover;
+    object-position: center;
+    border: 2px solid var(--green);
+    box-shadow: 0 4px 0 var(--black), 0 0 18px rgba(83, 252, 24, .3);
+  }
+
+  .character-name {
+    margin: 0 0 10px;
+    color: var(--green);
+    font: 18px/1.5 'Press Start 2P', monospace;
+    text-align: center;
+    text-shadow: 2px 2px 0 var(--black);
+  }
+
+  .character-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+    margin-bottom: 18px;
+  }
+
+  .character-info-item {
+    padding: 9px;
+    color: var(--text-dim);
+    font-size: 18px;
+    background: rgba(5, 2, 8, .5);
+    border: 1px dashed rgba(240, 171, 252, .35);
+  }
+
+  .character-info-item strong {
+    display: block;
+    margin-top: 4px;
+    color: var(--pink);
+  }
+
+  .character-story {
+    color: var(--text-dim);
+    font-size: 19px;
+    line-height: 1.35;
+  }
+
+  .character-story h3 {
+    margin: 20px 0 8px;
+    color: var(--pink);
+    font: 12px/1.6 'Press Start 2P', monospace;
+  }
+
+  .character-story p {
+    margin: 0 0 13px;
+  }
+
+  @media(max-width: 420px) {
     .advanced-stream-details {
       grid-template-columns: 1fr;
+    }
+
+    .character-floating {
+      top: auto;
+      right: 14px;
+      bottom: 138px;
+      width: 50px;
+      height: 50px;
+    }
+
+    .character-floating::after {
+      display: none;
+    }
+
+    .character-info {
+      grid-template-columns: 1fr;
+    }
+
+    .character-header {
+      font-size: 10px;
+    }
+
+    .character-image {
+      height: 190px;
     }
   }
 `;
@@ -179,9 +365,7 @@ function createThemeParticle() {
 
   effectLayer.appendChild(particle);
 
-  setTimeout(() => {
-    particle.remove();
-  }, effect.speed + 3000);
+  setTimeout(() => particle.remove(), effect.speed + 3000);
 }
 
 function refreshThemeEffect() {
@@ -202,7 +386,7 @@ new MutationObserver(refreshThemeEffect).observe(document.body, {
 
 refreshThemeEffect();
 
-/* Kick son yayın bilgisi: yalnızca API kullanılır. */
+/* Kick son yayın bilgisi */
 
 function kickGetTitle(data) {
   return (
@@ -319,13 +503,7 @@ function kickShowLastStream(stream) {
   const lastCategory = document.getElementById('lastStreamCategory');
   const lastDate = document.getElementById('lastStreamDate');
 
-  if (
-    !stream ||
-    !lastStream ||
-    !lastTitle ||
-    !lastCategory ||
-    !lastDate
-  ) {
+  if (!stream || !lastStream || !lastTitle || !lastCategory || !lastDate) {
     return;
   }
 
@@ -341,7 +519,6 @@ function kickShowLastStream(stream) {
 async function kickRefreshLastStream() {
   const lastStream = document.getElementById('lastStream');
 
-  // Eski kayıt veya başlangıçta gösterilen veri kullanılmaz.
   if (lastStream) {
     lastStream.classList.add('empty');
   }
@@ -402,10 +579,7 @@ function getKickFollowerCount(channel) {
 function createAdvancedKickPanel() {
   const streamDetails = document.querySelector('.stream-details');
 
-  if (
-    !streamDetails ||
-    document.querySelector('.advanced-stream-details')
-  ) {
+  if (!streamDetails || document.querySelector('.advanced-stream-details')) {
     return;
   }
 
@@ -442,12 +616,7 @@ function updateAdvancedKickInfo(channel) {
   const durationElement = document.getElementById('advancedStreamDuration');
   const startElement = document.getElementById('advancedStreamStart');
 
-  if (
-    !viewerElement ||
-    !followerElement ||
-    !durationElement ||
-    !startElement
-  ) {
+  if (!viewerElement || !followerElement || !durationElement || !startElement) {
     return;
   }
 
@@ -469,8 +638,7 @@ function updateAdvancedKickInfo(channel) {
     stream.created_at;
 
   const startDate = startValue ? new Date(startValue) : null;
-  const validDate =
-    startDate && !Number.isNaN(startDate.getTime());
+  const validDate = startDate && !Number.isNaN(startDate.getTime());
 
   const elapsed = validDate
     ? Math.max(0, Date.now() - startDate.getTime())
@@ -535,3 +703,151 @@ createAdvancedKickPanel();
 refreshAdvancedKickInfo();
 setInterval(refreshAdvancedKickInfo, 30000);
 setInterval(kickRefreshLastStream, 60000);
+
+/* Jale Saral karakter bölümü */
+
+const jaleStory = [
+  {
+    title: 'Ailesi ve Çocukluğu',
+    text: 'Jale, İstanbulda mühendis bir anne ve babanın çocuğu olarak dünyaya geldi. Orta ve üst gelir seviyesine sahip ve eğitimin önemsendiği bir aile ortamında büyüdü. Küçük yaşlardan itibaren iyi bir eğitim aldı ve kültürel açıdan zengin bir çevrede yetişti. Evlerinde başarı tesadüf değil, disiplinli çalışmanın doğal sonucu olarak görülürdü. Ailesi ona hiçbir zaman sevgisini başarıyla ölçmese de, Jale başarılı olmanın kendisinden beklenen doğal bir sorumluluk olduğunu hissederek büyüdü.'
+  },
+  {
+    title: 'Eğitim Hayatı',
+    text: 'Jale, okul hayatı boyunca başarılı bir öğrenciydi. Özellikle yabancı dillere ve sosyal bilimlere ilgi duyuyordu. Üniversite eğitimini yüksek bir dereceyle tamamladıktan sonra Almanyada yüksek lisans yapma fırsatı elde etti. Bu fırsatı hem akademik hem de kişisel gelişimi için önemli bir adım olarak gördü ve hiç düşünmeden kabul etti.'
+  },
+  {
+    title: 'Almanya Yılları',
+    text: 'Almanyaya taşınması, Jalenin hayatındaki en büyük dönüm noktalarından biri oldu. İlk zamanlarda tek amacı eğitimini başarıyla tamamlamak ve kariyerine güçlü bir başlangıç yapmaktı. Ancak zaman geçtikçe farklı ülkelerden insanlarla tanıştı, farklı kültürleri yakından tanıdı ve kendi yaşam tarzını sorgulamaya başladı. Daha önce hayatını başarı, diploma ve kariyer üzerine kurarken, Almanyada insanların sosyal yaşama verdiği değeri gördü. Çevresindeki insanların yalnızca çalışmak yerine hayatın tadını çıkarmaya da zaman ayırdığını fark etti. Yüksek lisansını tamamladıktan sonra bir süre daha Almanyada yaşadı. Ancak zamanla ailesine ve ülkesine duyduğu özlem ağır basınca Türkiyeye dönmeye karar verdi.'
+  },
+  {
+    title: 'Türkiye Yılları',
+    text: 'Türkiyeye döndükten sonra kurumsal hayata adım attı ve kendi alanında çalışmaya başladı. Dışarıdan bakıldığında her şeye sahip gibi görünüyordu. İyi bir işi, düzenli bir hayatı ve başarılı bir kariyeri vardı. Ama zamanla bu düzenin ona beklediği mutluluğu vermediğini fark etti. Yeni insanlar tanımayı, farklı kültürleri keşfetmeyi ve hayatın sunduğu deneyimleri yaşamayı özlediğini hissetti. Uzun süre düşündükten sonra kendisi için yeni bir sayfa açmaya karar verdi. Sahip olduğu düzeni geride bırakarak, hayatına farklı bir yön vermek ve yeni bir başlangıç yapmak amacıyla Los Santosa gitmeye karar verdi.'
+  },
+  {
+    title: 'Jalenin Karakteri',
+    text: 'Jale dışarıdan bakıldığında soğuk ama sakin, kendinden emin ve kontrollü biri gibi görünür. İlk tanışmalarda mesafeli olsa da, güven duyduğu insanlara karşı oldukça samimi ve esprili bir kişiliğe sahiptir. Yeni tanıştığı insanlara önyargıyla yaklaşmaz, herkesin anlatacak bir hikayesi olduğuna inanır. Plan yapmayı sever ancak eskisi kadar katı değildir. Hayatın her zaman planlandığı gibi gitmediğini öğrendikten sonra daha spontane yaşamaya başlamıştır. Kolay kolay öfkelenmez. Sorunları konuşarak çözmeye çalışır ve insan ilişkilerinde empati kurmaya önem verir. Jalenin en büyük zaafı kadınlara ve erkeklere karşı duyduğu ilgidir. Flört etmeyi, yeni insanlarla tanışmayı ve karşılıklı çekim hissettiği kişilerle vakit geçirmeyi sever. Ancak bunu ciddi bir ilişki arayışıyla yapmaz. Duygusal bağ kurmaktan ve uzun süreli ilişkilerden bilinçli olarak uzak durmayı tercih eder. Bu durum zaman zaman çevresindeki insanlar tarafından yanlış anlaşılmasına veya ilişkilerinde karmaşık durumlar yaşamasına neden olabiliyor.'
+  },
+  {
+    title: 'Güçlü ve Zayıf Yönleri',
+    text: 'Karşılaştığı sorunlarda paniğe kapılmak yerine sakin kalmayı tercih eder. İnsanlarla kolay iletişim kurar ve farklı ortamlara hızlı uyum sağlar. Eğitim hayatı ve yurt dışı deneyimi sayesinde farklı bakış açılarını anlamakta zorlanmaz fakat mükemmeliyetçi yapısı nedeniyle zaman zaman kendine gereğinden fazla yüklenir ve değer verdiği insanlara karşı fazla korumacı davranabilir.'
+  },
+  {
+    title: 'Hobi ve İlgi Alanları',
+    text: 'Jale boş zamanlarını kalabalık kafelerde oturarak insanları gözlemlemeyi sever. Farklı şehirleri keşfetmek, yeni restoranlar denemek ve yerel kültürleri tanımak onun için büyük bir keyiftir. Kahve konusunda oldukça seçicidir ve gittiği her şehirde küçük butik kahvecileri keşfetmeye çalışır. Kitap okumayı özellikle kişisel gelişim alanını sever. Mutfakta yeni tarifler denemekten keyif alır. Özellikle dünya mutfaklarına ilgi duyar ve farklı kültürlerin yemeklerini öğrenmeyi sever.'
+  },
+  {
+    title: 'Jalenin Bakış Açısı',
+    text: 'Jale, çocukluğundan itibaren başarı odaklı yetişmiş olsa da zaman içinde mutluluğun yalnızca kariyer veya maddi başarıyla ölçülemeyeceğini öğrendi. Onun için bugün en değerli şey yeni insanlar tanımak, farklı hayatlara dokunmak ve unutulmayacak anılar biriktirmektir. Los Santosa gelmesindeki en büyük amacı da tam olarak budur. Yeni bir hayat kurmak, kendi sınırlarını yeniden keşfetmek ve bu şehirde yaşayacağı deneyimlerle kendisini geliştirmek istemesidir.'
+  }
+];
+
+function createJaleCharacterSection() {
+  if (document.getElementById('jaleCharacterButton')) {
+    return;
+  }
+
+  const button = document.createElement('button');
+  button.id = 'jaleCharacterButton';
+  button.className = 'character-floating';
+  button.type = 'button';
+  button.setAttribute('aria-label', 'Jale Saral karakter hikayesini aç');
+  button.textContent = '🧍';
+
+  const overlay = document.createElement('div');
+  overlay.id = 'jaleCharacterOverlay';
+  overlay.className = 'character-overlay';
+  overlay.setAttribute('aria-hidden', 'true');
+
+  const storyHtml = jaleStory.map(section => `
+    <h3>${section.title}</h3>
+    <p>${section.text}</p>
+  `).join('');
+
+  overlay.innerHTML = `
+    <section class="character-popup" role="dialog" aria-modal="true" aria-labelledby="jaleCharacterTitle">
+      <header class="character-header">
+        <span>KNGLRP // KARAKTER</span>
+        <button class="character-close" type="button" aria-label="Karakter penceresini kapat">X</button>
+      </header>
+
+      <div class="character-body">
+        <img
+          class="character-image"
+          src="https://i.ibb.co/5xjy63Vx/36c54bd6-3ef3-4f3b-9987-8c269777761b.jpg"
+          alt="Jale Saral karakter görseli"
+          draggable="false"
+        >
+
+        <h2 class="character-name" id="jaleCharacterTitle">JALE SARAL</h2>
+
+        <div class="character-info">
+          <div class="character-info-item">
+            Sunucu
+            <strong>KNGLRP</strong>
+          </div>
+          <div class="character-info-item">
+            Meslek
+            <strong>Belirtilmedi</strong>
+          </div>
+        </div>
+
+        <div class="character-story">
+          ${storyHtml}
+        </div>
+      </div>
+    </section>
+  `;
+
+  document.body.append(button, overlay);
+
+  const closeButton = overlay.querySelector('.character-close');
+
+  function openJaleCharacter() {
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-active');
+  }
+
+  function closeJaleCharacter() {
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+
+    if (!document.querySelector('.popup-overlay.open')) {
+      document.body.classList.remove('modal-active');
+    }
+  }
+
+  button.addEventListener('click', openJaleCharacter);
+  closeButton.addEventListener('click', closeJaleCharacter);
+
+  overlay.addEventListener('click', event => {
+    if (event.target === overlay) {
+      closeJaleCharacter();
+    }
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && overlay.classList.contains('open')) {
+      closeJaleCharacter();
+    }
+  });
+}
+
+const characterScrollbarStyle = document.createElement('style');
+
+characterScrollbarStyle.textContent = `
+  .character-popup {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .character-popup::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+`;
+
+document.head.appendChild(characterScrollbarStyle);
+
+createJaleCharacterSection();
