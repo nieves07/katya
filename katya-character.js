@@ -96,7 +96,7 @@
         </div>
 
         <h2 class="character-name" id="katyaCharacterTitle">KATYA LENZ</h2>
- 
+
         <div class="character-info">
           <div class="character-info-item">
             Sunucu
