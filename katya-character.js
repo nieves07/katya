@@ -96,7 +96,7 @@
       <div class="character-body">
         <img
           class="character-image"
-          src="https://i.ibb.co/M5WT42tY/argde.png"
+          src="https://i.ibb.co/d01FryQQ/dfhg.png"
           alt="Katya Lenz karakter görseli"
           draggable="false"
         >
