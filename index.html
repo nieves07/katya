@@ -40,7 +40,19 @@ main{position:relative;z-index:3;width:100%;max-width:460px;min-height:100vh;mar
 .hero:active{transform:scale(.98)!important}
 .hero::before,.hero::after{content:"";position:absolute;z-index:4;width:28px;height:28px;pointer-events:none;background:linear-gradient(var(--pink),var(--pink)) 0 0/10px 10px no-repeat,linear-gradient(var(--pink),var(--pink)) 100% 100%/10px 10px no-repeat}
 .hero::before{top:8px;left:8px}.hero::after{right:8px;bottom:8px;transform:rotate(180deg)}
-.hero img{width:100%;height:100%;object-fit:cover;object-position:41% center;transform:scale(1.18);transition:transform .22s ease,filter .22s ease}
+.hero img{width:100%;height:100%;object-fit:cover;object-position:41% center;transform:scale(1.18);transition:transform .22s ease,filter .22s ease}.hero img{
+  filter:blur(14px) brightness(.65);
+  opacity:0;
+  transition:
+    transform .22s ease,
+    filter .8s ease,
+    opacity .8s ease;
+}
+
+.hero img.image-loaded{
+  filter:blur(0) brightness(1);
+  opacity:1;
+}
 .hero:hover img{transform:scale(1.27);filter:drop-shadow(0 0 20px var(--pink))}
 .live-dot{position:absolute;z-index:5;top:15px;right:10px;display:flex;align-items:center;gap:6px;padding:4px 8px;color:var(--green);font-size:14px;letter-spacing:1px;background:rgba(5,2,8,.78);border:2px solid var(--green)}
 .live-dot.offline{color:var(--red);border-color:var(--red)}.live-dot.error{color:#fbbf24;border-color:#fbbf24}
@@ -730,5 +742,6 @@ applyTheme(currentTheme,false);
 </script>
 <script src="character.js"></script>
 <script src="theme-effects.js"></script>
+<script src="entry-effect.js"></script>
 </body>
 </html>
