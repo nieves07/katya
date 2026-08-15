@@ -52,6 +52,7 @@ effectStyle.textContent = `
     z-index: 1;
     overflow: hidden;
     pointer-events: none;
+    will-change: transform;
   }
 
   .theme-effect-particle {
@@ -61,25 +62,162 @@ effectStyle.textContent = `
     font-family: monospace;
     font-size: var(--effect-size);
     text-shadow: 0 0 5px var(--effect-glow), 0 0 14px var(--effect-glow);
-    animation: themeParticleFall var(--effect-speed) linear forwards;
+    animation: themeParticleFall var(--effect-speed) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
   }
 
   @keyframes themeParticleFall {
     0% {
-      transform: translate3d(0, -35px, 0) rotate(0deg);
+      transform: translate3d(0, -35px, 0) rotate(0deg) scale(0.3);
       opacity: 0;
     }
 
-    12% {
-      opacity: .9;
+    10% {
+      opacity: 1;
+      transform: translate3d(0, 5vh, 0) rotate(45deg) scale(1);
+    }
+
+    30% {
+      transform: translate3d(calc(var(--drift) * 0.3), 30vh, 0) rotate(120deg) scale(1.1);
+    }
+
+    60% {
+      transform: translate3d(calc(var(--drift) * 0.6), 65vh, 0) rotate(240deg) scale(0.9);
     }
 
     100% {
-      transform: translate3d(var(--drift), 110vh, 0) rotate(360deg);
+      transform: translate3d(var(--drift), 110vh, 0) rotate(360deg) scale(0.5);
       opacity: 0;
     }
   }
 
+  /* Button hover effect overlay */
+  .btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  .btn:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+
+  .btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      45deg,
+      transparent 30%,
+      rgba(255,255,255,0.05) 50%,
+      transparent 70%
+    );
+    transform: rotate(45deg) translateX(-100%);
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  .btn:hover::after {
+    transform: rotate(45deg) translateX(100%);
+  }
+
+  /* Floating buttons modern style */
+  .setup-floating,
+  .theme-floating,
+  .character-floating {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 16px;
+    box-shadow: 
+      0 5px 0 var(--black),
+      0 0 20px rgba(168,85,247,0.2),
+      inset 0 1px 0 rgba(255,255,255,0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .setup-floating:hover,
+  .theme-floating:hover,
+  .character-floating:hover {
+    border-radius: 50%;
+    box-shadow: 
+      0 8px 0 var(--black),
+      0 0 30px rgba(240,171,252,0.4),
+      inset 0 1px 0 rgba(255,255,255,0.15);
+  }
+
+  /* Modern popup overlay */
+  .popup-overlay,
+  .character-overlay {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .popup-overlay:not(.open),
+  .character-overlay:not(.open) {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .popup,
+  .character-popup {
+    transform: scale(0.9) translateY(20px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .open .popup,
+  .open .character-popup {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+
+  /* Modern entry notification */
+  .entry-notification {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 16px;
+    box-shadow: 
+      0 0 0 3px var(--black),
+      0 20px 60px rgba(240,171,252,0.3),
+      inset 0 1px 0 rgba(255,255,255,0.1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Modern hero card */
+  .hero {
+    border-radius: 12px;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+                filter 0.3s ease,
+                box-shadow 0.3s ease;
+  }
+
+  /* Particle burst on click */
+  .click-kiss {
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Stream info panel */
+  .stream-details,
   .advanced-stream-details {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -87,13 +225,23 @@ effectStyle.textContent = `
     margin-top: 8px;
   }
 
+  .stream-info,
   .advanced-stream-info {
     min-width: 0;
     padding: 8px;
     background: rgba(5, 2, 8, .48);
     border: 1px dashed rgba(240, 171, 252, .4);
+    transition: all 0.3s ease;
   }
 
+  .stream-info:hover,
+  .advanced-stream-info:hover {
+    background: rgba(72, 34, 120, 0.3);
+    border-color: var(--pink);
+    transform: translateY(-2px);
+  }
+
+  .stream-label,
   .advanced-stream-label {
     display: block;
     margin-bottom: 4px;
@@ -101,6 +249,7 @@ effectStyle.textContent = `
     font-size: 15px;
   }
 
+  .stream-value,
   .advanced-stream-value {
     display: block;
     overflow: hidden;
@@ -110,11 +259,12 @@ effectStyle.textContent = `
     white-space: nowrap;
   }
 
+  .stream-value.live-viewers,
   .advanced-stream-value.live-viewers {
     color: var(--green);
   }
 
-  /* Karakter butonu */
+  /* Character floating button */
   .character-floating {
     position: fixed;
     z-index: 10;
@@ -209,11 +359,13 @@ effectStyle.textContent = `
     cursor: pointer;
     background: transparent;
     border: 1px solid var(--pink);
+    transition: all 0.2s ease;
   }
 
   .character-close:hover {
     color: var(--black);
     background: var(--pink);
+    transform: scale(1.1);
   }
 
   .character-body {
@@ -229,6 +381,12 @@ effectStyle.textContent = `
     object-position: center;
     border: 2px solid var(--green);
     box-shadow: 0 4px 0 var(--black), 0 0 18px rgba(83, 252, 24, .3);
+    transition: all 0.3s ease;
+  }
+
+  .character-image:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 0 var(--black), 0 0 30px rgba(83, 252, 24, .5);
   }
 
   .character-name {
@@ -252,6 +410,13 @@ effectStyle.textContent = `
     font-size: 18px;
     background: rgba(5, 2, 8, .5);
     border: 1px dashed rgba(240, 171, 252, .35);
+    transition: all 0.3s ease;
+  }
+
+  .character-info-item:hover {
+    background: rgba(72, 34, 120, 0.3);
+    border-color: var(--pink);
+    transform: translateX(5px);
   }
 
   .character-info-item strong {
@@ -270,13 +435,42 @@ effectStyle.textContent = `
     margin: 20px 0 8px;
     color: var(--pink);
     font: 12px/1.6 'Press Start 2P', monospace;
+    position: relative;
+    display: inline-block;
+  }
+
+  .character-story h3::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 2px;
+    background: var(--pink);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+
+  .character-story h3:hover::after {
+    transform: scaleX(1);
   }
 
   .character-story p {
     margin: 0 0 13px;
+    transition: all 0.3s ease;
+    padding: 5px 10px;
+    border-left: 2px solid transparent;
+  }
+
+  .character-story p:hover {
+    border-left-color: var(--pink);
+    background: rgba(168,85,247,0.05);
+    padding-left: 15px;
   }
 
   @media(max-width: 420px) {
+    .stream-details,
     .advanced-stream-details {
       grid-template-columns: 1fr;
     }
@@ -708,35 +902,35 @@ setInterval(kickRefreshLastStream, 60000);
 
 const jaleStory = [
   {
-    title: 'Ailesi ve Çocukluğu',
+    section: 'Ailesi ve Çocukluğu',
     text: 'Jale, İstanbulda mühendis bir anne ve babanın çocuğu olarak dünyaya geldi. Orta ve üst gelir seviyesine sahip ve eğitimin önemsendiği bir aile ortamında büyüdü. Küçük yaşlardan itibaren iyi bir eğitim aldı ve kültürel açıdan zengin bir çevrede yetişti. Evlerinde başarı tesadüf değil, disiplinli çalışmanın doğal sonucu olarak görülürdü. Ailesi ona hiçbir zaman sevgisini başarıyla ölçmese de, Jale başarılı olmanın kendisinden beklenen doğal bir sorumluluk olduğunu hissederek büyüdü.'
   },
   {
-    title: 'Eğitim Hayatı',
+    section: 'Eğitim Hayatı',
     text: 'Jale, okul hayatı boyunca başarılı bir öğrenciydi. Özellikle yabancı dillere ve sosyal bilimlere ilgi duyuyordu. Üniversite eğitimini yüksek bir dereceyle tamamladıktan sonra Almanyada yüksek lisans yapma fırsatı elde etti. Bu fırsatı hem akademik hem de kişisel gelişimi için önemli bir adım olarak gördü ve hiç düşünmeden kabul etti.'
   },
   {
-    title: 'Almanya Yılları',
+    section: 'Almanya Yılları',
     text: 'Almanyaya taşınması, Jalenin hayatındaki en büyük dönüm noktalarından biri oldu. İlk zamanlarda tek amacı eğitimini başarıyla tamamlamak ve kariyerine güçlü bir başlangıç yapmaktı. Ancak zaman geçtikçe farklı ülkelerden insanlarla tanıştı, farklı kültürleri yakından tanıdı ve kendi yaşam tarzını sorgulamaya başladı. Daha önce hayatını başarı, diploma ve kariyer üzerine kurarken, Almanyada insanların sosyal yaşama verdiği değeri gördü. Çevresindeki insanların yalnızca çalışmak yerine hayatın tadını çıkarmaya da zaman ayırdığını fark etti. Yüksek lisansını tamamladıktan sonra bir süre daha Almanyada yaşadı. Ancak zamanla ailesine ve ülkesine duyduğu özlem ağır basınca Türkiyeye dönmeye karar verdi.'
   },
   {
-    title: 'Türkiye Yılları',
+    section: 'Türkiye Yılları',
     text: 'Türkiyeye döndükten sonra kurumsal hayata adım attı ve kendi alanında çalışmaya başladı. Dışarıdan bakıldığında her şeye sahip gibi görünüyordu. İyi bir işi, düzenli bir hayatı ve başarılı bir kariyeri vardı. Ama zamanla bu düzenin ona beklediği mutluluğu vermediğini fark etti. Yeni insanlar tanımayı, farklı kültürleri keşfetmeyi ve hayatın sunduğu deneyimleri yaşamayı özlediğini hissetti. Uzun süre düşündükten sonra kendisi için yeni bir sayfa açmaya karar verdi. Sahip olduğu düzeni geride bırakarak, hayatına farklı bir yön vermek ve yeni bir başlangıç yapmak amacıyla Los Santosa gitmeye karar verdi.'
   },
   {
-    title: 'Jalenin Karakteri',
+    section: 'Jalenin Karakteri',
     text: 'Jale dışarıdan bakıldığında soğuk ama sakin, kendinden emin ve kontrollü biri gibi görünür. İlk tanışmalarda mesafeli olsa da, güven duyduğu insanlara karşı oldukça samimi ve esprili bir kişiliğe sahiptir. Yeni tanıştığı insanlara önyargıyla yaklaşmaz, herkesin anlatacak bir hikayesi olduğuna inanır. Plan yapmayı sever ancak eskisi kadar katı değildir. Hayatın her zaman planlandığı gibi gitmediğini öğrendikten sonra daha spontane yaşamaya başlamıştır. Kolay kolay öfkelenmez. Sorunları konuşarak çözmeye çalışır ve insan ilişkilerinde empati kurmaya önem verir. Jalenin en büyük zaafı kadınlara ve erkeklere karşı duyduğu ilgidir. Flört etmeyi, yeni insanlarla tanışmayı ve karşılıklı çekim hissettiği kişilerle vakit geçirmeyi sever. Ancak bunu ciddi bir ilişki arayışıyla yapmaz. Duygusal bağ kurmaktan ve uzun süreli ilişkilerden bilinçli olarak uzak durmayı tercih eder. Bu durum zaman zaman çevresindeki insanlar tarafından yanlış anlaşılmasına veya ilişkilerinde karmaşık durumlar yaşamasına neden olabiliyor.'
   },
   {
-    title: 'Güçlü ve Zayıf Yönleri',
+    section: 'Güçlü ve Zayıf Yönleri',
     text: 'Karşılaştığı sorunlarda paniğe kapılmak yerine sakin kalmayı tercih eder. İnsanlarla kolay iletişim kurar ve farklı ortamlara hızlı uyum sağlar. Eğitim hayatı ve yurt dışı deneyimi sayesinde farklı bakış açılarını anlamakta zorlanmaz fakat mükemmeliyetçi yapısı nedeniyle zaman zaman kendine gereğinden fazla yüklenir ve değer verdiği insanlara karşı fazla korumacı davranabilir.'
   },
   {
-    title: 'Hobi ve İlgi Alanları',
+    section: 'Hobi ve İlgi Alanları',
     text: 'Jale boş zamanlarını kalabalık kafelerde oturarak insanları gözlemlemeyi sever. Farklı şehirleri keşfetmek, yeni restoranlar denemek ve yerel kültürleri tanımak onun için büyük bir keyiftir. Kahve konusunda oldukça seçicidir ve gittiği her şehirde küçük butik kahvecileri keşfetmeye çalışır. Kitap okumayı özellikle kişisel gelişim alanını sever. Mutfakta yeni tarifler denemekten keyif alır. Özellikle dünya mutfaklarına ilgi duyar ve farklı kültürlerin yemeklerini öğrenmeyi sever.'
   },
   {
-    title: 'Jalenin Bakış Açısı',
+    section: 'Jalenin Bakış Açısı',
     text: 'Jale, çocukluğundan itibaren başarı odaklı yetişmiş olsa da zaman içinde mutluluğun yalnızca kariyer veya maddi başarıyla ölçülemeyeceğini öğrendi. Onun için bugün en değerli şey yeni insanlar tanımak, farklı hayatlara dokunmak ve unutulmayacak anılar biriktirmektir. Los Santosa gelmesindeki en büyük amacı da tam olarak budur. Yeni bir hayat kurmak, kendi sınırlarını yeniden keşfetmek ve bu şehirde yaşayacağı deneyimlerle kendisini geliştirmek istemesidir.'
   }
 ];
@@ -759,7 +953,7 @@ function createJaleCharacterSection() {
   overlay.setAttribute('aria-hidden', 'true');
 
   const storyHtml = jaleStory.map(section => `
-    <h3>${section.title}</h3>
+    <h3>${section.section}</h3>
     <p>${section.text}</p>
   `).join('');
 
