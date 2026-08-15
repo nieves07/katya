@@ -1,168 +1,414 @@
 (() => {
-  const katyaStory = `
-    Katya, Almanyanın Köln şehrinde mühendis bir anne ve babanın tek çocuğu olarak dünyaya geldi. Orta üst gelir seviyesine sahip, eğitimin ve disiplinin her şeyin önünde tutulduğu geleneksel bir Alman aile ortamında büyüdü. Evlerinde başarı bir tesadüf değil, planlı ve özverili çalışmanın doğal bir sonucu olarak görülürdü. Ailesi sevgisini hiçbir zaman notlarla ölçmese de, Katya küçük yaşlardan itibaren başarılı olmanın kendisinden beklenen doğal bir sorumluluk olduğunu hissederek yetişti. Kültürel açıdan zengin bu çevre, onun küçük yaşta güçlü bir sorumluluk bilinci geliştirmesini sağladı. Dışarıdan bakıldığında tipik bir Alman soğukkanlılığına, sakin ve son derece kontrollü bir duruşa sahiptir. İlk tanışmalarda mesafeli görünse de güvendiği insanlara karşı oldukça samimi, empati yeteneği yüksek ve esprili bir kişiliğe bürünür. Kriz anlarında paniğe kapılmaz, sakin kalarak pratik çözümler üretir. Farklı kültürlerde yaşamış olmanın getirdiği yüksek uyum sağlama yeteneği vardır. Mükemmeliyetçi yapısı yüzünden bazen kendine gereğinden fazla yüklenir. Sevdiklerine karşı aşırı korumacı yaklaşabilir. Disiplinli yapısı sayesinde okul hayatı boyunca dikkat çeken başarılı bir öğrencilik sürdürdü. Özellikle yabancı dillere, sosyolojiye ve farklı kültürlere büyük bir ilgi duyuyordu. Almanyadaki prestijli üniversite eğitimini dereceyle tamamladıktan sonra, alanında uzmanlaşmak ve vizyonunu genişletmek amacıyla Amerikada yüksek lisans yapma fırsatı elde etti. Kariyeri için mükemmel bir adım olan bu fırsatı hiç düşünmeden kabul ederek ABDye yerleşti. Amerikaya taşınması Katyanın hayatındaki en büyük dönüm noktası oldu. İlk zamanlarda tek amacı akademik başarısını tamamlayıp kurumsal dünyada güçlü bir kariyer inşa etmekti. Ancak zamanla farklı kültürlerden insanlarla tanıdıkça kendi yaşam tarzını sorgulamaya başladı. O güne kadar hayatını yalnızca başarı, diplomalar ve gelecek kaygısı üzerine kurmuşken insanların anı yaşamaya ve sosyal hayata ne kadar değer verdiğini fark etti. Yıllarca sürdürdüğü metropol hayatı, bitmeyen kariyer stresi ve büyük şehirlerin mekanik temposu bir süre sonra onda derin bir bıkkınlık yarattı. İhtiyacı olan şeyin tırmanmaya çalıştığı kurumsal merdivenler değil, tamamen farklı ve keşfedilmemiş bir yaşam olduğunu anladı. Büyük şehrin gürültüsünden ve kalıplaşmış hayatından sıkılan Katya, öteden beri hayalini kurduğu o sakin kasaba yaşamını araştırmaya başladı. Haritada karşısına çıkan, Los Santosun karmaşasından uzak, kendine has atmosferiyle dikkat çeken Sandy Shores kasabası tam da aradığı kırılma noktasıydı. Şehirdeki kurulu düzenini ve parlak kariyer fırsatlarını geride bırakıp hiç denemediği bir şeyi yapmak üzere rotasını bu kasabaya çevirdi. Çocukluğu disiplin ve başarı odağında geçen Katya, Amerika tecrübesi ve Sandy Shoresa geliş kararıyla birlikte mutluluğun yalnızca unvanlardan ibaret olmadığını kavradı. Bugün onun için en değerli şey samimi insan ilişkileri kurmak, hikayeler dinlemek ve hayatın plansız sürprizlerine kucak açmaktır.
-  `;
+  'use strict';
+
+  document.getElementById('katyaCharacterButton')?.remove();
+  document.getElementById('katyaCharacterOverlay')?.remove();
+  document.getElementById('jaleCharacterButton')?.remove();
+  document.getElementById('jaleCharacterOverlay')?.remove();
 
   const style = document.createElement('style');
 
   style.textContent = `
-    .katya-character-floating {
-      top: calc(50% + 216px);
-      border-color: var(--pink);
-      box-shadow: 0 5px 0 var(--black), 0 0 16px rgba(240, 171, 252, .35);
+    .character-floating {
+      position: fixed !important;
+      z-index: 11 !important;
+      right: 18px !important;
+      width: 54px;
+      height: 54px;
+      padding: 3px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: rgba(25,12,48,.94);
+      border: 2px solid var(--pink);
+      outline: 2px solid var(--black);
+      box-shadow: 0 5px 0 var(--black), 0 0 16px rgba(240,171,252,.35);
+      cursor: none !important;
+      transition: .2s ease;
     }
 
-    .katya-character-floating::after {
+    .character-floating img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .character-floating:hover {
+      transform: translateY(-5px) scale(1.08);
+      border-radius: 50%;
+      box-shadow: 0 8px 0 var(--black), 0 0 22px rgba(240,171,252,.55);
+    }
+
+    #katyaCharacterButton {
+      top: calc(50% + 216px) !important;
+      border-color: var(--pink);
+    }
+
+    #jaleCharacterButton {
+      top: calc(50% + 144px) !important;
+      border-color: var(--green);
+    }
+
+    .character-floating::after {
+      position: absolute;
+      right: 62px;
+      white-space: nowrap;
+      padding: 5px 7px;
+      font: 10px 'Press Start 2P', monospace;
+      background: rgba(13,7,24,.96);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease;
+    }
+
+    #katyaCharacterButton::after {
       content: "KATYA";
       color: var(--pink);
-      border-color: var(--pink);
+      border: 1px solid var(--pink);
     }
 
-    .katya-character-floating:hover {
-      box-shadow: 0 8px 0 var(--black), 0 0 22px rgba(240, 171, 252, .55);
+    #jaleCharacterButton::after {
+      content: "JALE";
+      color: var(--green);
+      border: 1px solid var(--green);
     }
 
-    .katya-character-overlay .character-popup {
-      border-color: var(--pink);
-      box-shadow: 0 0 0 4px var(--black), 0 0 35px rgba(240, 171, 252, .35);
+    .character-floating:hover::after {
+      opacity: 1;
     }
 
-    .katya-character-overlay .character-header {
+    .character-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(3,1,8,.82);
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
+    }
+
+    .character-overlay.open {
+      display: flex;
+    }
+
+    .character-popup {
+      width: min(620px, 100%);
+      max-height: 90vh;
+      overflow-y: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      color: var(--text);
+      background: linear-gradient(145deg, #21113e, #0d0718);
+      border: 3px solid var(--pink);
+      box-shadow: 0 0 0 4px var(--black);
+      animation: characterPopupIn .35s ease forwards;
+    }
+
+    .character-popup::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+
+    .jale-character-overlay .character-popup {
+      border-color: var(--green);
+    }
+
+    @keyframes characterPopupIn {
+      from {
+        opacity: 0;
+        transform: translateY(18px) scale(.94);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .character-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 13px 15px;
       color: var(--pink);
-      border-bottom-color: rgba(240, 171, 252, .35);
+      font: 12px 'Press Start 2P', monospace;
+      border-bottom: 2px solid rgba(240,171,252,.35);
     }
 
-    .katya-character-overlay .character-body {
-      width: 100%;
+    .jale-character-overlay .character-header {
+      color: var(--green);
+      border-bottom-color: rgba(83,252,24,.35);
+    }
+
+    .character-close {
+      padding: 3px 7px;
+      color: var(--green);
+      font-size: 18px;
+      cursor: none !important;
+      background: transparent;
+      border: 1px solid var(--green);
+    }
+
+    .character-close:hover {
+      color: var(--black);
+      background: var(--green);
+    }
+
+    .character-body {
       padding: 18px;
     }
 
-    .katya-character-overlay .character-image {
+    .character-image {
       display: block;
       width: min(100%, 340px);
       height: 230px;
       margin: 0 auto 18px;
       object-fit: cover;
-      object-position: center;
       border: 2px solid var(--pink);
-      box-shadow: 0 4px 0 var(--black), 0 0 18px rgba(240, 171, 252, .25);
+      box-shadow: 0 4px 0 var(--black);
     }
 
-    .katya-character-overlay .character-name {
-      color: var(--pink);
+    .jale-character-overlay .character-image {
+      border-color: var(--green);
     }
 
-    .katya-character-overlay .character-info-item strong {
+    .character-name {
+      margin: 0 0 16px;
       color: var(--pink);
+      font: 18px 'Press Start 2P', monospace;
+      text-align: center;
+    }
+
+    .jale-character-overlay .character-name {
+      color: var(--green);
+    }
+
+    .character-info {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 9px;
+      margin-bottom: 18px;
+    }
+
+    .character-info-item {
+      padding: 9px;
+      color: var(--text-dim);
+      font-size: 17px;
+      background: rgba(5,2,8,.5);
+      border: 1px dashed rgba(240,171,252,.35);
+    }
+
+    .character-info-item strong {
+      display: block;
+      margin-top: 4px;
+      color: var(--pink);
+      font-size: 18px;
+    }
+
+    .jale-character-overlay .character-info-item strong {
+      color: var(--green);
+    }
+
+    .character-story {
+      color: var(--text-dim);
+      font-size: 18px;
+      line-height: 1.45;
+    }
+
+    .character-story h3 {
+      margin: 18px 0 6px;
+      color: var(--pink);
+      font-size: 20px;
+    }
+
+    .jale-character-overlay .character-story h3 {
+      color: var(--green);
+    }
+
+    .character-story p {
+      margin: 0 0 12px;
     }
 
     @media(max-width: 420px) {
-      .katya-character-floating {
-        top: auto;
-        bottom: 198px;
-        right: 14px;
+      .character-floating {
+        right: 14px !important;
         width: 50px;
         height: 50px;
       }
 
-      .katya-character-overlay .character-image {
+      #katyaCharacterButton {
+        top: auto !important;
+        bottom: 198px !important;
+      }
+
+      #jaleCharacterButton {
+        top: auto !important;
+        bottom: 138px !important;
+      }
+
+      .character-floating::after {
+        display: none;
+      }
+
+      .character-body {
+        padding: 14px;
+      }
+
+      .character-image {
         width: 100%;
         height: 190px;
+      }
+
+      .character-info {
+        grid-template-columns: 1fr;
+      }
+
+      .character-header {
+        font-size: 10px;
       }
     }
   `;
 
   document.head.appendChild(style);
 
-  const button = document.createElement('button');
-  button.id = 'katyaCharacterButton';
-  button.className = 'character-floating katya-character-floating';
-  button.type = 'button';
-  button.setAttribute('aria-label', 'Katya Lenz karakter hikayesini aç');
-  button.textContent = '👤';
+  const katyaStory = [
+    ['Ailesi ve Çocukluğu', 'Katya, Almanyanın Köln şehrinde mühendis bir anne ve babanın tek çocuğu olarak dünyaya geldi. Orta üst gelir seviyesine sahip, eğitimin ve disiplinin ön planda tutulduğu geleneksel bir Alman aile ortamında büyüdü. Küçük yaşlardan itibaren sorumluluk sahibi ve çalışkan biri olarak yetiştirildi.'],
+    ['Eğitim Hayatı', 'Disiplinli yapısı sayesinde okul hayatı boyunca başarılı bir öğrencilik sürdürdü. Özellikle yabancı dillere, sosyolojiye ve farklı kültürlere büyük ilgi duyuyordu. Almanyadaki üniversite eğitimini dereceyle tamamladıktan sonra Amerikada yüksek lisans yapma fırsatı elde etti.'],
+    ['Amerika Yılları', 'Amerikaya taşınması Katyanın hayatındaki en büyük dönüm noktalarından biri oldu. Farklı kültürlerden insanlarla tanıştı ve hayatını yalnızca başarı, diploma ve kariyer üzerine kurmaması gerektiğini fark etti.'],
+    ['Sandy Shores', 'Metropol hayatının stresinden sıkılan Katya, Los Santosun karmaşasından uzak Sandy Shores kasabasına yerleşmeye karar verdi. Kurulu düzenini ve kariyer fırsatlarını geride bırakıp tamamen yeni bir yaşam kurmaya başladı.'],
+    ['Katyanın Karakteri', 'Dışarıdan sakin, kontrollü ve mesafeli görünür. Güvendiği insanlara karşı samimi, empati yeteneği yüksek ve esprilidir. Kriz anlarında paniğe kapılmaz; pratik çözümler üretir. Mükemmeliyetçi yapısı nedeniyle zaman zaman kendine fazla yüklenebilir.']
+  ];
 
-  const overlay = document.createElement('div');
-  overlay.id = 'katyaCharacterOverlay';
-  overlay.className = 'character-overlay katya-character-overlay';
-  overlay.setAttribute('aria-hidden', 'true');
+  const jaleStory = [
+    ['Ailesi ve Çocukluğu', 'Jale, İstanbulda mühendis bir anne ve babanın çocuğu olarak dünyaya geldi. Eğitimin önemsendiği, kültürel açıdan zengin ve disiplinli bir aile ortamında büyüdü.'],
+    ['Eğitim Hayatı', 'Okul hayatı boyunca başarılı bir öğrenciydi. Özellikle yabancı dillere ve sosyal bilimlere ilgi duydu. Üniversite eğitimini yüksek bir dereceyle tamamladıktan sonra Almanyada yüksek lisans yaptı.'],
+    ['Almanya Yılları', 'Almanyaya taşınması Jalenin hayatındaki en büyük dönüm noktalarından biri oldu. Farklı kültürlerden insanlarla tanıştı ve hayatını yalnızca kariyer üzerine kurmaması gerektiğini fark etti.'],
+    ['Türkiye Yılları', 'Türkiyeye döndükten sonra kurumsal hayata adım attı. İyi bir kariyere sahip olmasına rağmen zamanla bu düzenin beklediği mutluluğu vermediğini fark etti ve yeni bir başlangıç yapmak için Los Santosa gitmeye karar verdi.'],
+    ['Jalenin Karakteri', 'Jale dışarıdan soğuk, sakin ve kontrollü görünür. Güvendiği insanlara karşı samimi ve esprilidir. Sorunları konuşarak çözmeye çalışır. Mükemmeliyetçi yapısı nedeniyle zaman zaman kendine fazla yüklenebilir.'],
+    ['Hobi ve İlgi Alanları', 'Kalabalık kafelerde oturup insanları gözlemlemeyi, farklı şehirleri keşfetmeyi ve yeni restoranlar denemeyi sever. Kahve konusunda seçicidir; kitap okumaktan ve dünya mutfaklarını keşfetmekten hoşlanır.']
+  ];
 
-  overlay.innerHTML = `
-    <section class="character-popup" role="dialog" aria-modal="true" aria-labelledby="katyaCharacterTitle">
-      <header class="character-header">
-        <span>BBL RP // KARAKTER</span>
-        <button class="character-close" type="button" aria-label="Karakter penceresini kapat">X</button>
-      </header>
+  const characters = [
+    {
+      id: 'katya',
+      name: 'KATYA LENZ',
+      buttonClass: 'katya-character-floating',
+      header: 'BBL RP // KARAKTER',
+      image: 'https://i.ibb.co/d01FryQQ/dfhg.png',
+      imageAlt: 'Katya Lenz karakter görseli',
+      server: 'BBL RP',
+      birthplace: 'Köln, Almanya',
+      story: katyaStory
+    },
+    {
+      id: 'jale',
+      name: 'JALE SARAL',
+      buttonClass: 'jale-character-floating',
+      header: 'KNGLRP // KARAKTER',
+      image: 'https://i.ibb.co/5xjy63Vx/36c54bd6-3ef3-4f3b-9987-8c269777761b.jpg',
+      imageAlt: 'Jale Saral karakter görseli',
+      server: 'KNGLRP',
+      birthplace: 'İstanbul, Türkiye',
+      story: jaleStory
+    }
+  ];
 
-      <div class="character-body">
-        <img
-          class="character-image"
-          src="https://i.ibb.co/d01FryQQ/dfhg.png"
-          alt="Katya Lenz karakter görseli"
-          draggable="false"
-        >
+  function createCharacter(character) {
+    const button = document.createElement('button');
 
-        <h2 class="character-name" id="katyaCharacterTitle">KATYA LENZ</h2>
+    button.id = `${character.id}CharacterButton`;
+    button.className = `character-floating ${character.buttonClass}`;
+    button.type = 'button';
+    button.setAttribute('aria-label', `${character.name} karakter hikayesini aç`);
+    button.innerHTML = `
+      <img
+        src="${character.image}"
+        alt="${character.name} görseli"
+        draggable="false"
+      >
+    `;
 
-        <div class="character-info">
-          <div class="character-info-item">
-            Sunucu
-            <strong>BBL RP</strong>
-          </div>
+    const overlay = document.createElement('div');
 
-          <div class="character-info-item">
-            Meslek
-            <strong>Yok</strong>
-          </div>
-
-          <div class="character-info-item">
-            Yaş
-            <strong>30</strong>
-          </div>
-
-          <div class="character-info-item">
-            Doğum yeri
-            <strong>Köln, Almanya</strong>
-          </div>
-        </div>
-
-        <div class="character-story">
-          ${katyaStory}
-        </div>
-      </div>
-    </section>
-  `;
-
-  document.body.append(button, overlay);
-
-  const closeButton = overlay.querySelector('.character-close');
-
-  function openKatyaCharacter() {
-    overlay.classList.add('open');
-    overlay.setAttribute('aria-hidden', 'false');
-    document.body.classList.add('modal-active');
-  }
-
-  function closeKatyaCharacter() {
-    overlay.classList.remove('open');
+    overlay.id = `${character.id}CharacterOverlay`;
+    overlay.className = `character-overlay ${character.id}-character-overlay`;
     overlay.setAttribute('aria-hidden', 'true');
 
-    if (!document.querySelector('.popup-overlay.open, .character-overlay.open')) {
-      document.body.classList.remove('modal-active');
+    const storyHtml = character.story.map(([title, text]) => `
+      <h3>${title}</h3>
+      <p>${text}</p>
+    `).join('');
+
+    overlay.innerHTML = `
+      <section class="character-popup" role="dialog" aria-modal="true">
+        <header class="character-header">
+          <span>${character.header}</span>
+          <button class="character-close" type="button" aria-label="Pencereyi kapat">X</button>
+        </header>
+
+        <div class="character-body">
+          <img
+            class="character-image"
+            src="${character.image}"
+            alt="${character.imageAlt}"
+            draggable="false"
+          >
+
+          <h2 class="character-name">${character.name}</h2>
+
+          <div class="character-info">
+            <div class="character-info-item">Sunucu<strong>${character.server}</strong></div>
+            <div class="character-info-item">Meslek<strong>Yok</strong></div>
+            <div class="character-info-item">Yaş<strong>30</strong></div>
+            <div class="character-info-item">Doğum yeri<strong>${character.birthplace}</strong></div>
+          </div>
+
+          <div class="character-story">${storyHtml}</div>
+        </div>
+      </section>
+    `;
+
+    document.body.append(button, overlay);
+
+    const closeButton = overlay.querySelector('.character-close');
+
+    function openCharacter() {
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-active');
     }
+
+    function closeCharacter() {
+      overlay.classList.remove('open');
+      overlay.setAttribute('aria-hidden', 'true');
+
+      if (!document.querySelector('.popup-overlay.open, .character-overlay.open')) {
+        document.body.classList.remove('modal-active');
+      }
+    }
+
+    button.addEventListener('click', openCharacter);
+    closeButton.addEventListener('click', closeCharacter);
+
+    overlay.addEventListener('click', event => {
+      if (event.target === overlay) closeCharacter();
+    });
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && overlay.classList.contains('open')) {
+        closeCharacter();
+      }
+    });
   }
 
-  button.addEventListener('click', openKatyaCharacter);
-  closeButton.addEventListener('click', closeKatyaCharacter);
-
-  overlay.addEventListener('click', event => {
-    if (event.target === overlay) {
-      closeKatyaCharacter();
-    }
-  });
-
-  document.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && overlay.classList.contains('open')) {
-      closeKatyaCharacter();
-    }
-  });
+  characters.forEach(createCharacter);
 })();
