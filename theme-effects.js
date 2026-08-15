@@ -52,9 +52,9 @@
       transform: translate(-50%, -50%);
       transition:
         opacity .15s ease,
-        transform .18s ease,
         border-color .18s ease;
       mix-blend-mode: normal !important;
+      will-change: left, top;
     }
 
     #mouseGlow::after {
@@ -133,12 +133,15 @@
         opacity: 0;
         transform: translate3d(0, -40px, 0) rotate(0deg) scale(.35);
       }
+
       12% {
         opacity: .9;
       }
+
       50% {
         transform: translate3d(var(--drift), 55vh, 0) rotate(180deg) scale(1);
       }
+
       100% {
         opacity: 0;
         transform: translate3d(calc(var(--drift) * -1), 112vh, 0)
@@ -463,46 +466,21 @@
 
   document.head.appendChild(style);
 
-  let targetX = innerWidth / 2;
-  let targetY = innerHeight / 2;
-  let currentX = targetX;
-  let currentY = targetY;
-  let animationFrame = 0;
   let visible = false;
-
-  function animateCursor() {
-    if (!cursor || !finePointer || reduceMotion) return;
-
-    currentX += (targetX - currentX) * .22;
-    currentY += (targetY - currentY) * .22;
-
-    cursor.style.left = `${currentX}px`;
-    cursor.style.top = `${currentY}px`;
-
-    if (
-      Math.abs(targetX - currentX) > .1 ||
-      Math.abs(targetY - currentY) > .1
-    ) {
-      animationFrame = requestAnimationFrame(animateCursor);
-    } else {
-      animationFrame = 0;
-    }
-  }
 
   function moveCursor(event) {
     if (!cursor || !finePointer || reduceMotion) return;
 
-    targetX = event.clientX;
-    targetY = event.clientY;
+    const x = event.clientX;
+    const y = event.clientY;
+
+    cursor.style.left = `${x}px`;
+    cursor.style.top = `${y}px`;
     cursor.style.opacity = '1';
     visible = true;
 
-    document.documentElement.style.setProperty('--pointer-x', `${event.clientX}px`);
-    document.documentElement.style.setProperty('--pointer-y', `${event.clientY}px`);
-
-    if (!animationFrame) {
-      animationFrame = requestAnimationFrame(animateCursor);
-    }
+    document.documentElement.style.setProperty('--pointer-x', `${x}px`);
+    document.documentElement.style.setProperty('--pointer-y', `${y}px`);
   }
 
   function hideCursor() {
