@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
-<head> 
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KATYA // Linkler</title>
@@ -464,18 +464,11 @@ async function checkKickLiveStatus(){
       category.textContent='Yayın aktif değil';
       title.textContent='Şu anda canlı yayın yok';
 
-      const saved=localStorage.getItem('katyaLastStream');
+     const latestStream=await getLastStreamFromApi(channel);
 
-      if(saved){
-        showLastStream(JSON.parse(saved));
-      }else{
-        const latestStream=await getLastStreamFromApi(channel);
-
-        if(latestStream){
-          showLastStream(latestStream);
-          localStorage.setItem('katyaLastStream',JSON.stringify(latestStream));
-        }
-      }
+if(latestStream){
+  showLastStream(latestStream);
+}
     }
   }catch(error){
     updateStatus('error');
