@@ -25,7 +25,7 @@ body::after{z-index:2;opacity:.13;background:linear-gradient(rgba(255,255,255,.0
 #sparkles,#rain,#mist,#particles{position:fixed;inset:0;overflow:hidden;pointer-events:none}
 #sparkles,#rain,#mist{z-index:1}#particles{z-index:12}
 .modal-active #sparkles,.modal-active #rain,.modal-active #mist,.modal-active #particles{display:none}
-#mouseGlow{position:fixed;z-index:11;width:150px;height:150px;border-radius:50%;pointer-events:none;opacity:0;background:radial-gradient(circle,rgba(240,171,252,.28),rgba(168,85,247,.12) 32%,transparent 72%);transform:translate(-50%,-50%);filter:blur(5px);transition:opacity .25s ease;mix-blend-mode:screen}
+#mouseGlow{position:fixed;z-index:11;width:1px;height:100px;border-radius:50%;pointer-events:none;opacity:0;background:radial-gradient(circle,rgba(240,171,252,.28),rgba(168,85,247,.12) 32%,transparent 72%);transform:translate(-50%,-50%);filter:blur(5px);transition:opacity .25s ease;mix-blend-mode:screen}
 .sparkle{position:absolute;width:4px;height:4px;background:var(--pink);box-shadow:0 0 10px var(--purple);animation:drift linear infinite}
 @keyframes drift{0%{transform:translateY(-18vh);opacity:0}12%{opacity:.7}100%{transform:translateY(118vh) translateX(30px);opacity:0}}
 .drop{position:absolute;top:-25vh;width:2px;height:34px;background:linear-gradient(transparent,rgba(216,180,254,.85),transparent);opacity:.22;animation:rainFall linear infinite}
