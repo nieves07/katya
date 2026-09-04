@@ -14,7 +14,7 @@
       display: none;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
+      overflow: hidden; 
       background:
         radial-gradient(circle at center, rgba(255, 0, 68, .16), transparent 35%),
         linear-gradient(135deg, #050005, #16000c 50%, #020002);
