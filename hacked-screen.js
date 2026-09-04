@@ -14,18 +14,19 @@
       display: none;
       align-items: center;
       justify-content: center;
-      overflow: hidden; 
+      overflow: hidden;
+      opacity: 1;
       background:
         radial-gradient(circle at center, rgba(255, 0, 68, .16), transparent 35%),
         linear-gradient(135deg, #050005, #16000c 50%, #020002);
       color: #ff174f;
       font-family: 'Press Start 2P', monospace;
       text-align: center;
-      animation: hackedScreenIn .35s ease forwards;
     }
 
     #hackedScreen.open {
       display: flex;
+      opacity: 1;
     }
 
     #hackedScreen::before {
@@ -83,18 +84,6 @@
       text-shadow: 0 0 12px #fff;
     }
 
-    @keyframes hackedScreenIn {
-      from {
-        opacity: 0;
-        transform: scale(1.04);
-      }
-
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-
     @keyframes hackedScan {
       from {
         transform: translateY(-20px);
@@ -134,7 +123,6 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      #hackedScreen,
       #hackedScreen::before,
       .hacked-title,
       .hacked-warning {
