@@ -2,7 +2,7 @@
   'use strict';
 
   const heroImage = document.querySelector('.hero img');
-
+ 
   if (!heroImage) return;
 
   heroImage.classList.add('image-loading');
