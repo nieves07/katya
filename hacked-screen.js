@@ -154,7 +154,7 @@
     hackedScreen.innerHTML = `
       <div class="hacked-content">
         <div class="hacked-warning">
-          ⚠ BU SİTE NIEVES TARAFINDAN HACKLENMİŞTİR ⚠
+          ⚠ BU SİTE NİEVES TARAFINDAN DESTURLANMIŞTIR ⚠
         </div>
         <h1 class="hacked-title">HACKED</h1>
         <p class="hacked-by">HACKED BY NIEVES</p>
